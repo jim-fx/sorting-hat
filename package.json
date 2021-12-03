@@ -14,6 +14,7 @@
   "devDependencies": {
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/kit": "next",
+    "@types/three": "^0.134.0",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
     "eslint": "^7.32.0",
@@ -29,6 +30,8 @@
   },
   "type": "module",
   "dependencies": {
-    "googleapis": "^92.0.0"
+    "googleapis": "^92.0.0",
+    "svelte-cubed": "^0.2.1",
+    "three": "^0.135.0"
   }
 }
