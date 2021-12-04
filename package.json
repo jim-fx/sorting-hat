@@ -2,7 +2,7 @@
   "name": "head",
   "version": "0.0.1",
   "scripts": {
-    "dev": "svelte-kit dev",
+    "dev": "svelte-kit dev --host",
     "build": "svelte-kit build",
     "package": "svelte-kit package",
     "preview": "svelte-kit preview",
@@ -31,7 +31,10 @@
   "type": "module",
   "dependencies": {
     "googleapis": "^92.0.0",
+    "ogl": "^0.0.76",
     "svelte-cubed": "^0.2.1",
-    "three": "^0.135.0"
+    "svelte-knobby": "^0.3.3",
+    "three": "^0.135.0",
+    "vite-plugin-glsl": "^0.0.5"
   }
 }

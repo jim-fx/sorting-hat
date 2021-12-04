@@ -6,8 +6,15 @@
 		<link rel="icon" href="/favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		%svelte.head%
+<style>
+body{
+  margin: 0;
+  padding:0;
+  overflow:hidden;
+}
+</style>
 	</head>
 	<body>
-		<div id="svelte">%svelte.body%</div>
+		%svelte.body%
 	</body>
 </html>
