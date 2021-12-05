@@ -1,19 +1,17 @@
 <script lang="ts">
-	import './global.scss';
-	import { onMount } from 'svelte';
-	import type { Bone, SkinnedMesh } from 'three';
-
-	import Animator from '$lib/animator';
-
-	import * as THREE from 'three';
-	import { lerp } from '$lib/animator/helpers';
-	import createHat from '$lib/createHat';
 	import createActions from '$lib/actions';
 	import { activeAction } from '$lib/actions/ActionClass';
-	import Typewriter from '$lib/elements/Typewriter.svelte';
-	import { fade, scale } from 'svelte/transition';
+	import Animator from '$lib/animator';
+	import { lerp } from '$lib/animator/helpers';
+	import createHat from '$lib/createHat';
 	import Overlay from '$lib/elements/Overlay.svelte';
+	import Typewriter from '$lib/elements/Typewriter.svelte';
 	import gyro from '$lib/gyro';
+	import { onMount } from 'svelte';
+	import { scale } from 'svelte/transition';
+	import type { SkinnedMesh } from 'three';
+	import * as THREE from 'three';
+	import './global.scss';
 
 	let canvas: HTMLCanvasElement;
 
@@ -111,8 +109,6 @@
 		/* controls.enableDamping = true; */
 		/* controls.target.set(0, 0.2, 0); */
 
-		window.setB = animator.setActiveBone;
-
 		function animate(time) {
 			requestAnimationFrame(animate);
 
@@ -134,7 +130,7 @@
 			renderer.render(scene, camera);
 		}
 
-		animate();
+		animate(0);
 	});
 </script>
 
@@ -216,7 +212,7 @@
 
 	:global(body) {
 		width: 100vw;
-		background-image: url('background.jpg');
+		background-image: url(background.jpg);
 		background-size: cover;
 		background-position: center center;
 		height: 100vh;
