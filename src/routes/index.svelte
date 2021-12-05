@@ -212,7 +212,7 @@
 
 	:global(body) {
 		width: 100vw;
-		background-image: url(background.jpg);
+		background-image: url(/background.jpg);
 		background-size: cover;
 		background-position: center center;
 		height: 100vh;
