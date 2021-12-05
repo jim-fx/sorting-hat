@@ -29,24 +29,24 @@ input[type='text'] {
 
 #range-slider {
 	height: 3px;
+}
 
-	.rangeNub {
-		background-color: black;
-	}
+#range-slider .rangeNub {
+	background-color: black;
+}
 
-	.rangeHandle {
-		margin-top: -3px;
-		border-radius: 100%;
-		background-color: black;
-	}
+#range-slider .rangeHandle {
+	margin-top: -3px;
+	border-radius: 100%;
+	background-color: black;
+}
 
-	.pip {
-		opacity: 0.8;
-		color: black;
-		font-weight: bolder;
-		background-color: black;
-	}
-	.pip.selected {
-		opacity: 1;
-	}
+#range-slider .pip {
+	opacity: 0.8;
+	color: black;
+	font-weight: bolder;
+	background-color: black;
+}
+#range-slider .pip.selected {
+	opacity: 1;
 }

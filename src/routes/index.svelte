@@ -11,7 +11,6 @@
 	import { scale } from 'svelte/transition';
 	import type { SkinnedMesh } from 'three';
 	import * as THREE from 'three';
-	import './global.scss';
 
 	let canvas: HTMLCanvasElement;
 
