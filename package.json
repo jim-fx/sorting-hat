@@ -32,8 +32,10 @@
   "dependencies": {
     "googleapis": "^92.0.0",
     "ogl": "^0.0.76",
+    "sass": "^1.44.0",
     "svelte-cubed": "^0.2.1",
     "svelte-knobby": "^0.3.3",
+    "svelte-range-slider-pips": "^2.0.0",
     "three": "^0.135.0",
     "vite-plugin-glsl": "^0.0.5"
   }

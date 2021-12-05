@@ -1,14 +1,19 @@
 <script lang="ts">
+	import './global.scss';
 	import { onMount } from 'svelte';
 	import type { Bone, SkinnedMesh } from 'three';
 
-	import Pattern from './pattern.svelte';
+	import Animator from '$lib/animator';
 
 	import * as THREE from 'three';
-	import { MeshStandardMaterial } from 'three';
-	import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
-	import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-	import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+	import { lerp } from '$lib/animator/helpers';
+	import createHat from '$lib/createHat';
+	import createActions from '$lib/actions';
+	import { activeAction } from '$lib/actions/ActionClass';
+	import Typewriter from '$lib/elements/Typewriter.svelte';
+	import { fade, scale } from 'svelte/transition';
+	import Overlay from '$lib/elements/Overlay.svelte';
+	import gyro from '$lib/gyro';
 
 	let canvas: HTMLCanvasElement;
 
@@ -26,20 +31,8 @@
 	light3.position.set(1, 1, -1.5);
 	scene.add(light3);
 
-	const loader = new GLTFLoader();
-
-	const dracoLoader = new DRACOLoader();
-	dracoLoader.setDecoderPath('draco/');
-	loader.setDRACOLoader(dracoLoader);
-
-	let skeleton: THREE.SkinnedMesh;
-
-	let boneArray: THREE.Bone[] = [];
-	let bones: {
-		circle: THREE.Bone[];
-		spine: THREE.Bone[];
-		[key: string]: THREE.Bone | THREE.Bone[];
-	} = { circle: [], spine: [] };
+	let _showText: boolean = true;
+	$: showText = _showText === true || _showText === undefined;
 
 	const width = 500;
 	const height = width;
@@ -54,120 +47,78 @@
 	let my = 0;
 
 	let loaded = false;
-	let wiggleFlaps = false;
-	const rotations = {};
 
-	function lerp(a, b, alpha) {
-		return a * alpha + b * (1 - alpha);
-	}
+	const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
+	camera.position.set(0, 0, 1);
 
+	let animator: Animator;
 	function handleMouseMove({ clientX, clientY }) {
 		mx = 2 - (clientX / wWidth) * 2 - 1;
 		my = (clientY / wHeight) * 2 - 1;
 	}
 
-	const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
-	camera.position.set(0, 0, 1);
+	async function loadModel() {
+		const gltf = await createHat();
 
-	function flattenBones(bone, arr = []) {
-		if (bone.type === 'Bone' && !arr.includes(bone)) arr.push(bone);
-		bone.children.forEach((b) => {
-			if (b.type === 'Bone' && !arr.includes(b)) arr.push(b);
-			if (b.children.length) flattenBones(b, arr);
-		});
-		return arr;
+		const obj = gltf.scene.children[0].children[1] as SkinnedMesh;
+		const skeleton = gltf.scene.children[0].children[0] as SkinnedMesh;
+		animator.setSkeleton(skeleton);
+
+		obj.geometry.computeBoundingBox();
+		const center = new THREE.Vector3();
+		const bbox = obj.geometry.boundingBox;
+		bbox.getCenter(center);
+		camera.position.x = center.x;
+		camera.position.y = center.y;
+		const boundingHeight = (bbox.max.y - center.y) * 4;
+		const camDistance = boundingHeight / 2 / Math.tan((Math.PI * camera.fov) / 360);
+		camera.position.z = camDistance;
+
+		scene.add(gltf.scene);
+
+		loaded = true;
+	}
+
+	$: activeState = $activeAction && $activeAction.state;
+
+	function handleResize() {
+		wHeight = window.innerHeight;
+		wWidth = window.innerWidth;
 	}
 
 	onMount(() => {
 		wHeight = window.innerHeight;
 		wWidth = window.innerWidth;
 
-		if ('Gyroscope' in window) {
-			let gyroscope = new Gyroscope({ frequency: 30 });
-
-			gyroscope.addEventListener('reading', (e) => {
-				console.log('Angular velocity along the X-axis ' + gyroscope.x);
-				console.log('Angular velocity along the Y-axis ' + gyroscope.y);
-				console.log('Angular velocity along the Z-axis ' + gyroscope.z);
-			});
-			gyroscope.start();
-		}
-
-		const tLoader = new THREE.TextureLoader();
-		const colMap = tLoader.load('SortingHat_col.png');
-		const normalMap = tLoader.load('SortingHat_normal.png');
-		const roughMap = tLoader.load('SortingHat_rough.png');
-		const envMap = tLoader.load('env_map.jpg');
-		envMap.mapping = THREE.EquirectangularReflectionMapping;
-
-		colMap.flipY = false;
-		normalMap.flipY = false;
-		roughMap.flipY = false;
-
-		const mat = new MeshStandardMaterial({
-			map: colMap,
-			normalMap,
-			envMapIntensity: 1,
-			normalScale: new THREE.Vector2(1, 1),
-			roughnessMap: roughMap
+		let oAlpha, oBeta;
+		gyro(([alpha, beta, gamma]) => {
+			if (!oAlpha) oAlpha = alpha;
+			if (!oBeta) oBeta = beta;
+			mx = (oBeta - beta) / 180;
+			my = (oAlpha - alpha) / 180;
 		});
+
+		loadModel();
 
 		const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
 		renderer.setSize(width, height);
+
+		animator = new Animator({ scene, renderer, camera });
+		const action = createActions(animator);
+		action.setActive();
 
 		/* const controls = new OrbitControls(camera, renderer.domElement); */
 		/* controls.enableDamping = true; */
 		/* controls.target.set(0, 0.2, 0); */
 
-		loader.load(
-			'sorting_hat.glb',
-			(gltf) => {
-				/* gltf.scene.scale.set(0.01, 0.01, 0.01); */
+		window.setB = animator.setActiveBone;
 
-				const obj = gltf.scene.children[0].children[1] as SkinnedMesh;
-				skeleton = gltf.scene.children[0].children[0] as SkinnedMesh;
-				boneArray = flattenBones(skeleton) as Bone[];
-				obj.material = mat;
-
-				/* const helper = new THREE.SkeletonHelper(skeleton); */
-				/* scene.add(helper); */
-
-				obj.geometry.computeBoundingBox();
-				const center = new THREE.Vector3();
-				const bbox = obj.geometry.boundingBox;
-				bbox.getCenter(center);
-				camera.position.x = center.x;
-				camera.position.y = center.y;
-				const boundingHeight = (bbox.max.y - center.y) * 4;
-				const camDistance = boundingHeight / 2 / Math.tan((Math.PI * camera.fov) / 360);
-				camera.position.z = camDistance;
-
-				boneArray.forEach((bone) => {
-					if (bone.userData.name.toLowerCase().includes('circle')) bones.circle.push(bone);
-					if (bone.userData.name.toLowerCase().startsWith('bone')) bones.spine.push(bone);
-
-					bones[bone.userData.name] = bone;
-				});
-
-				console.log(bones);
-				scene.add(gltf.scene);
-
-				loaded = true;
-			},
-			(xhr) => {
-				console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-			},
-			(error) => {
-				console.log(error);
-			}
-		);
-
-		function animate(f) {
+		function animate(time) {
 			requestAnimationFrame(animate);
 
 			/* controls.update(); */
 
-			const i = Date.now();
+			animator?.update(time);
 
 			x = lerp(mx, x, 0.1);
 			y = lerp(my, y, 0.1);
@@ -175,23 +126,6 @@
 			camera.position.x = x * 0.8;
 			camera.position.y = y * 0.3 + 0.1;
 			camera.lookAt(0, 0.2, 0);
-
-			if (boneArray.length) {
-				//Wiggle Spine;
-
-				/* boneArray.forEach(bone => bone.rotation.x = Math.sin(i/500)/4) */
-
-				bones.spine.forEach((bone, j) => {
-					bone.rotation.y = Math.sin(i / 500 + j * 2) / 10;
-					bone.rotation.x = Math.sin(i / 500 + j * 1) / 20;
-					bone.rotation.z = Math.sin(i / 500) / 20;
-				});
-
-				// Wiggle outer circle
-				bones.circle.forEach((bone, j) => {
-					bone.position.y = Math.sin(i / 300 + j * 2) / 100;
-				});
-			}
 
 			render();
 		}
@@ -208,128 +142,76 @@
 	<title>Dungeon Entry</title>
 </svelte:head>
 
-<svelte:window on:mousemove={handleMouseMove} />
+<svelte:window on:mousemove={handleMouseMove} on:resize={handleResize} />
 
+<Overlay />
 
-<div class="pattern-wrapper">
-	<Pattern />
-</div>
-<div class="pattern-wrapper p-tr">
-	<Pattern rotate="90deg" />
-</div>
-<div class="pattern-wrapper p-br">
-	<Pattern rotate="180deg" />
-</div>
-<div class="pattern-wrapper p-bl">
-	<Pattern rotate="-90deg" />
-</div>
-
-<div class="bar b-t" />
-<div class="bar b-r" />
-<div class="bar b-l" />
-<div class="bar b-b" />
-
-<div class="overlay" />
 <main>
-	<canvas bind:this={canvas} class:loaded />
-	<div class="content" />
+	<canvas
+		bind:this={canvas}
+		class:loaded
+		on:click={() => {
+			if (animator.params.wiggleRim < 1) {
+				animator.params.wiggleRim = 5;
+				animator.params.wiggleEyes = 1;
+				setTimeout(() => {
+					animator.params.wiggleRim = 0;
+					animator.params.wiggleEyes = 0;
+				}, 1000);
+			}
+		}}
+	/>
+
+	<div class="content">
+		{#if $activeAction?.text && ($activeState === 'running' || $activeState === 'finished' || $activeState === 'input') && showText}
+			<Typewriter text={$activeAction.text} duration={$activeAction.duration} />
+		{/if}
+
+		{#if $activeState}
+			{#if $activeState === 'suspended'}
+				<button on:click={() => $activeAction.start()}>Starten</button>
+			{:else if $activeState === 'finished'}
+				{#if $activeAction?.nextActions?.length}
+					<div>
+						{#each $activeAction.nextActions as next, i}
+							<button
+								in:scale={{ duration: 200, delay: 200 * i }}
+								on:click={() => next.action.start()}>{next.name}</button
+							>
+						{/each}
+					</div>
+				{/if}
+			{:else if $activeState === 'input'}
+				<svelte:component
+					this={$activeAction.element}
+					bind:showText={_showText}
+					callback={(v) => {
+						$activeAction.handleElementCallback(v);
+					}}
+				/>
+			{/if}
+		{/if}
+	</div>
 </main>
 
 <style>
-	.overlay {
-		position: fixed;
-		width: 100vw;
-		height: 100vh;
-		background-blend-mode: multiply;
-		background: radial-gradient(transparent, rgba(0, 0, 0, 0.8));
-	}
-
-	.bar {
-		border: 2px solid black;
-		border-radius: 2px;
-		position: fixed;
-	}
-
-	.bar::after {
-		content: '';
-		position: absolute;
-		width: 100%;
-		border-radius: 5px;
-		height: 2px;
-		background-color: black;
-	}
-
-	.b-t {
-		top: -2px;
-		width: calc(100vw - 240px);
-		height: 8px;
-		left: 120px;
-	}
-
-	.b-t::after {
-		top: 23px;
-	}
-	.b-b {
-		bottom: -2px;
-		width: calc(100vw - 240px);
-		height: 8px;
-		left: 120px;
-	}
-
-	.b-b::after {
-		bottom: 23px;
-	}
-	.b-r {
-		right: -2px;
-		height: calc(100vh - 240px);
-		width: 8px;
-		top: 120px;
-	}
-
-	.b-r::after {
-		right: 23px;
-		height: 100%;
-		width: 2px;
-	}
-
-	.b-l {
-		left: -2px;
-		height: calc(100vh - 240px);
-		width: 8px;
-		top: 120px;
-	}
-
-	.b-l::after {
-		left: 23px;
-		height: 100%;
-		width: 2px;
-	}
-	.pattern-wrapper {
-		width: 100px;
-		height: 100px;
-		position: fixed;
-		z-index: 2;
-	}
-
-	.p-tr {
-		right: 0;
-	}
-
-	.p-br {
-		right: 0;
-		bottom: 0;
-	}
-
-	.p-bl {
-		bottom: 0;
-		left: 0;
-	}
-
 	main {
 		height: 100%;
 		width: 100%;
-		display: grid;
+		max-height: 100vh;
+		display: flex;
 		justify-content: center;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.content {
+		max-width: 90%;
+		max-width: 700px;
+		height: 60%;
+		display: grid;
+		place-items: center;
+		align-content: center;
 	}
 
 	:global(body) {
@@ -347,6 +229,9 @@
 		transform: scale(0);
 		filter: drop-shadow(40px 49px 35px black);
 		transition: transform 3s ease;
+		object-fit: contain;
+		max-height: 60%;
+		max-width: 100vw;
 	}
 
 	canvas.loaded {
