@@ -10,21 +10,21 @@
 	import { onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
 	import type { SkinnedMesh } from 'three';
-	import * as THREE from 'three';
+	import { PerspectiveCamera, PointLight, Scene, Vector3, WebGLRenderer } from 'three';
 
 	let canvas: HTMLCanvasElement;
 
-	const scene = new THREE.Scene();
+	const scene = new Scene();
 
-	const light1 = new THREE.PointLight(0xc0a9ff, 0.8);
+	const light1 = new PointLight(0xc0a9ff, 0.8);
 	light1.position.set(2.5, 2.5, 2);
 	scene.add(light1);
 
-	const light2 = new THREE.PointLight(0xffd1d1, 0.8);
+	const light2 = new PointLight(0xffd1d1, 0.8);
 	light2.position.set(-2.5, 2.5, 2);
 	scene.add(light2);
 
-	const light3 = new THREE.PointLight(0xffffff, 1);
+	const light3 = new PointLight(0xffffff, 1);
 	light3.position.set(1, 1, -1.5);
 	scene.add(light3);
 
@@ -45,7 +45,7 @@
 
 	let loaded = false;
 
-	const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
+	const camera = new PerspectiveCamera(50, width / height, 0.1, 1000);
 	camera.position.set(0, 0, 1);
 
 	let animator: Animator;
@@ -62,7 +62,7 @@
 		animator.setSkeleton(skeleton);
 
 		obj.geometry.computeBoundingBox();
-		const center = new THREE.Vector3();
+		const center = new Vector3();
 		const bbox = obj.geometry.boundingBox;
 		bbox.getCenter(center);
 		camera.position.x = center.x;
@@ -97,7 +97,7 @@
 
 		loadModel();
 
-		const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+		const renderer = new WebGLRenderer({ canvas, alpha: true });
 		renderer.setSize(width, height);
 
 		animator = new Animator({ scene, renderer, camera });
