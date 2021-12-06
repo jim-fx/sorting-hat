@@ -92,7 +92,7 @@
 			if (!oAlpha) oAlpha = alpha;
 			if (!oBeta) oBeta = beta;
 			mx = ((oBeta - beta) / 80) * -1;
-			my = ((oAlpha - alpha) / 80) * -1;
+			my = ((oAlpha - alpha) / 80) * -2;
 		});
 
 		loadModel();
