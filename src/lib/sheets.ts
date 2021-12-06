@@ -43,7 +43,7 @@ async function _getData(): Promise<{ Name: string; Alter: number }[]> {
 
 	const _rows = raw.data.values;
 
-	const [_, headers, ...rows] = _rows;
+	const [headers, ...rows] = _rows;
 
 	function parseRow(row: string[]) {
 		const o = {};
