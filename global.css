@@ -1,12 +1,23 @@
 @font-face {
 	font-family: 'Chantelli';
-	src: url('/fonts/Chantelli_Antiqua-webfont.woff') format('woff');
+	src: url('fonts/Chantelli_Antiqua-webfont.woff') format('woff');
 	font-weight: normal;
 	font-style: normal;
 }
 
 :root {
 	font-family: 'Chantelli', serif;
+}
+
+body {
+	width: 100vw;
+	background-image: url(background.jpg);
+	background-size: cover;
+	background-position: center center;
+	height: 100vh;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
 }
 
 button {
