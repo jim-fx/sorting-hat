@@ -16,8 +16,10 @@ export async function post({ body: { name, house, confidence } }) {
 
   return {
     headers: {
-      "Access-Control-Allow-Origin": "*"
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+      "Content-Type": "text/plain",
     },
-    body: {}
+    body: "worked"
   };
 }
