@@ -19,7 +19,7 @@ export function get(apiPath: string): Promise<Response> {
 }
 
 // To wake up the heroku instance
-// get("api/houses");
+get("api/houses");
 
 export function post(apiPath: string, body: unknown): Promise<Response> {
   return send(apiPath, "POST", body)
