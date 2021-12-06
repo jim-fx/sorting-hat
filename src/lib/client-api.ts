@@ -4,9 +4,6 @@ async function send(_url: string, method: string, body?: unknown): Promise<Respo
   const options = { method }
   if (body) {
     options["body"] = JSON.stringify(body);
-    options["headers"] = {
-      "Content-Type": "application/json"
-    }
   }
 
   const url = VITE_API_URL +"/"+ _url;

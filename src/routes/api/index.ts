@@ -8,8 +8,16 @@ export async function get() {
   };
 }
 
-export async function post({ body: { name, house, confidence } }) {
-  console.log("Add Person", { name, house, confidence })
+export async function post({ body }) {
+
+  let person = body;
+  if (typeof person === "string") {
+    person = JSON.parse(person);
+  }
+
+  const { name, house, confidence } = person;
+
+  console.log("Add Person", person)
   if (name && house && typeof confidence !== 'undefined') {
     addPerson({ name, house, confidence });
   }
