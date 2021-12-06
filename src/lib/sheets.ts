@@ -69,7 +69,7 @@ async function _getData(): Promise<{ Name: string; Alter: number }[]> {
 let lastGetUpdate: number;
 let cacheData;
 export async function getData() {
-	if (!lastGetUpdate || Date.now() - 300000 > lastGetUpdate) {
+	if (!lastGetUpdate || Date.now() - 10000 > lastGetUpdate) {
 		cacheData = await _getData();
 		lastGetUpdate = Date.now();
 	}

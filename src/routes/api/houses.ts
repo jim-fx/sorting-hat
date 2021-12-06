@@ -13,7 +13,6 @@ export async function get() {
 
   d.forEach(({ Haus }) => {
     if (Haus && Haus.toLowerCase() in houses) {
-      console.log(Haus)
       houses[Haus.toLowerCase()]++;
     }
   })

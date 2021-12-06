@@ -44,7 +44,7 @@ export default function createActions(anim: Animator): Action {
     });
   })
 
-  const randomHouse = new Action({ audioFile: "random_haus.mp3", text: "Okay, um dass herauszufinden bin ich ja hier. Dann werde ich mal  schauen, hmm, ich sehe Mut, aber auch Intelligenz, oh, und hier ist auch noch Empathie. Schwierige Entscheidung, aber ich denke:", element: RandomHouse });
+  const randomHouse = new Action({ audioFile: "random_haus.mp3", text: "Okay, um das herauszufinden bin ich ja hier. Dann werde ich mal  schauen, hmm, ich sehe Mut, aber auch Intelligenz, oh, und hier ist auch noch Empathie. Schwierige Entscheidung, aber ich denke:", element: RandomHouse });
   randomHouse.addEventListener("start", () => {
     anim.params.wiggleMouth = 1;
   })
@@ -88,7 +88,7 @@ export default function createActions(anim: Animator): Action {
 
   })
 
-  const finalAction = new Action({ audioFile: "final.mp3", text: "So, das war auch schon alles, wir freuen uns dich am 31.12 willkommen zu heißen, und wünschen dir bis dahin eine schöne Weihnachtszeit." })
+  const finalAction = new Action({ audioFile: "final.mp3", text: "So, das war auch schon alles. Wir freuen uns, dich am 31.12 willkommen zu heißen, und wünschen dir bis dahin eine schöne Weihnachtszeit." })
 
   rootAction.addAction("Auf jeden Fall!", name);
   rootAction.addAction("Ne, eher nicht", dontStartQuiz);
