@@ -14,7 +14,7 @@ async function send(_url: string, method: string, body?: any): Promise<Response>
     url = "https://thingproxy.freeboard.io/fetch/" + url
   }
 
-  return fetch(VITE_API_URL + "/" + url, options)
+  return fetch(url, options)
 }
 
 export function get(apiPath: string): Promise<Response> {
