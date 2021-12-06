@@ -201,7 +201,7 @@
 	}
 
 	.content {
-		max-width: 90%;
+		width: 90%;
 		max-width: 700px;
 		height: 60%;
 		display: grid;
