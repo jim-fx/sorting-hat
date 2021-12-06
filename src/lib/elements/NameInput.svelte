@@ -15,7 +15,7 @@
 <div class="wrapper">
 	{#if confirmName}
     <p>
-		Alles klar, <b>{value}</b>, ist dass der richtige Name?
+		Alles klar, <b>{value}</b>, ist das der richtige Name?
     </p>
 
 		<br />
