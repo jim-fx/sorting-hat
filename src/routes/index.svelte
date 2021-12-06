@@ -91,8 +91,8 @@
 		gyro(([alpha, beta, gamma]) => {
 			if (!oAlpha) oAlpha = alpha;
 			if (!oBeta) oBeta = beta;
-			mx = (oBeta - beta) / 180;
-			my = (oAlpha - alpha) / 180;
+			mx = (oBeta - beta) / 100;
+			my = (oAlpha - alpha) / 100;
 		});
 
 		loadModel();
@@ -145,6 +145,7 @@
 	<canvas
 		bind:this={canvas}
 		class:loaded
+		style={`display:${loaded ? 'block' : 'none'}`}
 		on:click={() => {
 			if (animator.params.wiggleRim < 1) {
 				animator.params.wiggleRim = 5;
@@ -212,13 +213,15 @@
 	canvas {
 		transform: scale(0);
 		filter: drop-shadow(40px 49px 35px black);
-		transition: transform 3s ease;
+		transition: transform 3s ease, opacity 0.3s ease;
 		object-fit: contain;
 		max-height: 60%;
+		opacity: 0;
 		max-width: 100vw;
 	}
 
 	canvas.loaded {
+		opacity: 1;
 		transform: scale(1);
 	}
 </style>
