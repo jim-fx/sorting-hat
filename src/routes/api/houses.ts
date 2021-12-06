@@ -20,6 +20,7 @@ export async function get() {
 
   return {
     headers: {
+      "Content-Type": "text/plain",
       "Access-Control-Allow-Origin": "*"
     },
     body: Object.entries(houses).map(([name, members]) => {
