@@ -28,7 +28,6 @@ jobs:
         env:
           KIT_ADAPTER: static
           VITE_API_URL: https://si21.herokuapp.com
-          BASE_PATH: /${{ github.event.repository.name }}
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.5
