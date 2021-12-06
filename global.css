@@ -1,0 +1,52 @@
+@font-face {
+	font-family: 'Chantelli';
+	src: url('/fonts/Chantelli_Antiqua-webfont.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+:root {
+	font-family: 'Chantelli', serif;
+}
+
+button {
+	color: white;
+	background: black;
+	border: none;
+	padding: 10px;
+	font-family: Chantelli;
+	margin: 10px;
+	margin-left: 0px;
+	font-size: 1.2em;
+}
+
+input[type='text'] {
+	font-size: 1.2em;
+	background: gray;
+	padding: 5px;
+	color: white;
+}
+
+#range-slider {
+	height: 3px;
+}
+
+#range-slider .rangeNub {
+	background-color: black;
+}
+
+#range-slider .rangeHandle {
+	margin-top: -3px;
+	border-radius: 100%;
+	background-color: black;
+}
+
+#range-slider .pip {
+	opacity: 0.8;
+	color: black;
+	font-weight: bolder;
+	background-color: black;
+}
+#range-slider .pip.selected {
+	opacity: 1;
+}
