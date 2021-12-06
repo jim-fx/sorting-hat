@@ -9,7 +9,7 @@ async function send(_url: string, method: string, body?: any): Promise<Response>
     }
   }
 
-  let url = VITE_API_URL + _url;
+  let url = VITE_API_URL +"/"+ _url;
   if (VITE_API_URL && VITE_API_URL.length) {
     url = "https://thingproxy.freeboard.io/fetch/" + url
   }
