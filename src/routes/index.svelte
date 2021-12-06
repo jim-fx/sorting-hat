@@ -209,17 +209,6 @@
 		align-content: center;
 	}
 
-	:global(body) {
-		width: 100vw;
-		background-image: url(/background.jpg);
-		background-size: cover;
-		background-position: center center;
-		height: 100vh;
-		margin: 0;
-		padding: 0;
-		overflow: hidden;
-	}
-
 	canvas {
 		transform: scale(0);
 		filter: drop-shadow(40px 49px 35px black);
