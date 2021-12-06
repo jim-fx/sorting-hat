@@ -1,10 +1,18 @@
 <script lang="ts">
-  export const showText = false;
+	import { onMount } from 'svelte';
+
+	export const showText = false;
+
+	let stupidHack = '';
+
+	onMount(() => {
+		stupidHack = window.location.pathname;
+	});
 </script>
 
 <video width="500" height="281" controls autoplay>
-	<source src="/video/video.webm" type="video/webm" />
-	<source src="/video/video.mp4" type="video/mp4" />
+	<source src="{stupidHack}video/video.webm" type="video/webm" />
+	<source src="{stupidHack}video/video.mp4" type="video/mp4" />
 	<track kind="captions" />
 </video>
 
