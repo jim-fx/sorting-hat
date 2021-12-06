@@ -18,9 +18,10 @@ export async function get() {
     }
   })
 
-  console.log(houses);
-
   return {
+    headers: {
+      "Access-Control-Allow-Origin": "*"
+    },
     body: Object.entries(houses).map(([name, members]) => {
       return { name, members }
     }).sort((a, b) => a.members > b.members ? 1 : -1)[0].name
