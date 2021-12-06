@@ -91,8 +91,8 @@
 		gyro(([alpha, beta, gamma]) => {
 			if (!oAlpha) oAlpha = alpha;
 			if (!oBeta) oBeta = beta;
-			mx = (1 - ((oBeta - beta) / 180)) * 4;
-			my = (1 - ((oAlpha - alpha) / 180)) * 4;
+			mx = ((oBeta - beta) / 80) * -1;
+			my = ((oAlpha - alpha) / 80) * -1;
 		});
 
 		loadModel();
