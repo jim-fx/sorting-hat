@@ -7,7 +7,11 @@
 	const houses = ['ravenclaw', 'gryffindor', 'slytherin', 'hufflepuff'];
 
 	async function getHouse() {
-		return await (await fetch('api/houses')).text();
+		const res = await (await fetch('api/houses')).text();
+		if (res.length > 20) {
+			return houses[Math.floor(Math.random() * houses.length)];
+		}
+		return res;
 	}
 
 	let house = getHouse();
@@ -16,7 +20,7 @@
 	onMount(async () => {
 		/* house = houses[Math.floor(Math.random() * houses.length)]; */
 
-    const h = await house;
+		const h = await house;
 
 		const audio = new Audio('audio/' + h + '.mp3');
 
@@ -36,12 +40,13 @@
 </script>
 
 {#await house then h}
-<h1>{h}</h1>
+	<h1>{h}</h1>
 
-<img transition:scale src="icons/{h}.svg" alt="crest of house {house}" />
+	<img transition:scale src="icons/{h}.svg" alt="crest of house {house}" />
 
-<button on:click={() => callback(h)}>Okay</button>
+	<button on:click={() => callback(h)}>Okay</button>
 {/await}
+
 <style>
 	h1 {
 		text-align: center;
