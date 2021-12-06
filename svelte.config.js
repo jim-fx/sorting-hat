@@ -3,7 +3,7 @@ import adapterStatic from '@sveltejs/adapter-static';
 import preprocess from 'svelte-preprocess';
 import glsl from 'vite-plugin-glsl';
 
-const { KIT_ADAPTER = 'node', BASE_PATH = '/' } = process.env;
+const { KIT_ADAPTER = 'node', BASE_PATH = '' } = process.env;
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
