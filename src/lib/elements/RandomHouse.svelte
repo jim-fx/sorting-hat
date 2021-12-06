@@ -1,4 +1,6 @@
 <script lang="ts">
+import { get } from '$lib/client-api';
+
 	import { onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
 
@@ -7,8 +9,8 @@
 	const houses = ['ravenclaw', 'gryffindor', 'slytherin', 'hufflepuff'];
 
 	async function getHouse() {
-		const res = await (await fetch('api/houses')).text();
-		if (res.length > 20) {
+		const res =	await (await get("api/houses")).text();
+    if (res.length > 20) {
 			return houses[Math.floor(Math.random() * houses.length)];
 		}
 		return res;

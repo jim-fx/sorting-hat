@@ -27,6 +27,7 @@ jobs:
       - run: 'pnpm build'
         env:
           KIT_ADAPTER: static
+          VITE_API_URL: https://si21.herokuapp.com
           BASE_PATH: /${{ github.event.repository.name }}
 
       - name: Deploy 🚀

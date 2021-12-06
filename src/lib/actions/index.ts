@@ -6,7 +6,7 @@ import InputRange from "$lib/elements/InputRange.svelte";
 import Video from "$lib/elements/Video.svelte";
 import { Action } from "./ActionClass";
 import { userData } from "$lib/stores";
-import { get } from "svelte/store";
+import { post } from "$lib/client-api";
 
 export default function createActions(anim: Animator): Action {
 
@@ -82,7 +82,7 @@ export default function createActions(anim: Animator): Action {
   confidenceArrival.addEventListener("data", (v) => {
     userData.update(s => {
       s.confidence = v / 10;
-      fetch("api", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(s) })
+      post("api", s);
       return s;
     })
 
