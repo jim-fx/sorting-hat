@@ -1,4 +1,5 @@
 import type Animator from "$lib/animator";
+import { finished } from "$lib/stores";
 import { SvelteComponent, tick } from "svelte";
 import { writable } from "svelte/store"
 
@@ -10,6 +11,7 @@ export class Action {
   text: string;
   duration = 5;
   static anim: Animator;
+  isLast = true;
   state = writable("suspended");
   nextActions: { name?: string, action: Action }[] = [];
   data: unknown;
@@ -98,6 +100,10 @@ export class Action {
     if (this.nextActions.length === 1 && !("name" in this.nextActions[0])) {
       this.nextActions[0].action.start();
     }
+
+    if (!this.nextActions.length) {
+      finished.set(true);
+    }
   }
 
   private emit(eventName: string, data?: unknown): void {
@@ -119,6 +125,7 @@ export class Action {
   }
 
   addAction(name: string | Action, action?: Action): void {
+    this.isLast = false;
     if (typeof name !== "string") {
       this.nextActions.push({ action: name })
     } else {

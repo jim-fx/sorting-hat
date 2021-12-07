@@ -1,3 +1,4 @@
+import { writable } from "svelte/store";
 import localStorageStore from "./localStorageStore";
 
 export const userData = localStorageStore("user-data", {
@@ -5,3 +6,6 @@ export const userData = localStorageStore("user-data", {
   confidence: "",
   house: ""
 }) 
+
+
+export const finished = writable(false);

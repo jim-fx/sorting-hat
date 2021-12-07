@@ -7,6 +7,7 @@ import Video from "$lib/elements/Video.svelte";
 import { Action } from "./ActionClass";
 import { userData } from "$lib/stores";
 import { post } from "$lib/client-api";
+import { get } from "svelte/store";
 
 export default function createActions(anim: Animator): Action {
 
@@ -103,6 +104,11 @@ export default function createActions(anim: Animator): Action {
 
   confidenceArrival.addAction(finalAction)
 
+
+  const data = get(userData);
+  if (data.name && data.house && "confidence" in data) {
+    return finalAction;
+  }
 
 
   return rootAction;

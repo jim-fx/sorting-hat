@@ -42,8 +42,6 @@ export default class Animator {
     this._bones = bonesToObject(this.boneArray) as typeof this._bones;
     this.bones = boneObjectToRotations(this._bones);
     this.loaded = !!this.boneArray.length;
-    console.log(this);
-    window.anim = this;
   }
 
   update(time: number): void {
