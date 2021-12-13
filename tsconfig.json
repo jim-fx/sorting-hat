@@ -2,20 +2,23 @@
 	"compilerOptions": {
 		"moduleResolution": "node",
 		"module": "es2020",
-		"lib": ["es2020", "DOM"],
-		"target": "es2020",
+		"lib": ["esnext", "DOM"],
+		"target": "esnext",
 		/**
 			svelte-preprocess cannot figure out whether you have a value or a type, so tell TypeScript
 			to enforce using \`import type\` instead of \`import\` for Types.
 			*/
 		"importsNotUsedAsValues": "error",
 		"isolatedModules": true,
+		"experimentalDecorators": true,
 		"resolveJsonModule": true,
+		"emitDecoratorMetadata": true,
 		/**
 			To have warnings/errors of the Svelte compiler at the correct position,
 			enable source maps by default.
 			*/
 		"sourceMap": true,
+		"declaration": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,

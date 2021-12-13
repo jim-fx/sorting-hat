@@ -2,10 +2,9 @@
 	import { lerp } from '$lib/animator/helpers';
 	import loader from '$lib/loader';
 	import pointerStore from '$lib/pointerStore';
-import { userData } from '$lib/stores';
+	import { userData } from '$lib/stores';
 	import { onMount } from 'svelte';
 	import type { Bone } from 'three';
-	import type { Skeleton } from 'three';
 	import { PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
 
 	let canvas: HTMLCanvasElement;
@@ -44,10 +43,7 @@ import { userData } from '$lib/stores';
 			skeleton[bone.userData.name] = bone;
 		});
 
-		console.log(skeleton);
-
 		skeleton['Left'].rotation.z = 0;
-		console.log(skeleton['Left'].position.x);
 		skeleton['Left'].position.x = -0.02;
 		skeleton['Right'].rotation.z = 0;
 		skeleton['Right'].position.x = 0.02;

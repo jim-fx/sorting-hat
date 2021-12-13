@@ -15,6 +15,8 @@ export default <T>(key: string, defaultValue: T): Writable<T> => {
 			}
 		}
 
+		value = { ...defaultValue, ...value };
+
 		const store = writable<T>(value);
 
 		store.subscribe((v) => {

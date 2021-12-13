@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-node';
+import adapterNode from '@sveltejs/adapter-node';
 import adapterStatic from '@sveltejs/adapter-static';
 import preprocess from 'svelte-preprocess';
 import glsl from 'vite-plugin-glsl';
@@ -12,7 +12,12 @@ const config = {
 	preprocess: preprocess(),
 
 	kit: {
-		adapter: KIT_ADAPTER === 'node' ? adapter() : adapterStatic(),
+		adapter:
+			KIT_ADAPTER === 'node'
+				? adapterNode({
+						entryPoint: 'src/server.ts'
+				  })
+				: adapterStatic(),
 
 		// hydrate the <div id="svelte"> element in src/app.html
 		target: 'body',

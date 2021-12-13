@@ -25,6 +25,7 @@
 		"eslint-plugin-svelte3": "^3.2.1",
 		"prettier": "^2.4.1",
 		"prettier-plugin-svelte": "^2.4.0",
+		"prisma": "3.6.0",
 		"svelte": "^3.44.0",
 		"svelte-check": "^2.2.6",
 		"svelte-preprocess": "^4.9.4",
@@ -33,13 +34,23 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@prisma/client": "^3.6.0",
+		"bcrypt": "^5.0.1",
 		"googleapis": "^92.0.0",
+		"jsonwebtoken": "^8.5.1",
+		"mongodb": "^3.6.0",
+		"nanoid": "^3.1.30",
 		"ogl": "^0.0.76",
+		"polka": "^0.5.2",
+		"reflect-metadata": "^0.1.13",
 		"sass": "^1.44.0",
+		"sqlite3": "^5.0.2",
 		"svelte-cubed": "^0.2.1",
 		"svelte-knobby": "^0.3.3",
 		"svelte-range-slider-pips": "^2.0.0",
 		"three": "^0.135.0",
-		"vite-plugin-glsl": "^0.0.5"
+		"typeorm": "^0.2.41",
+		"vite-plugin-glsl": "^0.0.5",
+		"ws": "^8.3.0"
 	}
 }

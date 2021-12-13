@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { quiz } from '$lib/stores';
 	import Pattern from './pattern.svelte';
 </script>
 
@@ -43,7 +44,7 @@
 		pointer-events: none;
 		height: 100vh;
 		background-blend-mode: multiply;
-		background: radial-gradient(transparent, rgba(0, 0, 0, 0.8));
+		/* background: radial-gradient(transparent, rgba(0, 0, 0, 0.8)); */
 	}
 
 	.bar {

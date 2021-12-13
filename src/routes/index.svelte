@@ -14,8 +14,6 @@
 	import type { SkinnedMesh } from 'three';
 	import { PerspectiveCamera, PointLight, Scene, Vector3, WebGLRenderer } from 'three';
 
-	import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-
 	let canvas: HTMLCanvasElement;
 
 	const scene = new Scene();
@@ -116,73 +114,59 @@
 	<title>Dungeon Entry</title>
 </svelte:head>
 
-<Overlay />
+{#if $finished}
+	<Book />
+{:else}
+	<canvas
+		bind:this={canvas}
+		class:loaded
+		out:scale
+		style={`visibility:${loaded ? 'visible' : 'hidden'}`}
+		on:click={() => {
+			if (animator.params.wiggleRim < 1) {
+				animator.params.wiggleRim = 5;
+				animator.params.wiggleEyes = 1;
+				setTimeout(() => {
+					animator.params.wiggleRim = 0;
+					animator.params.wiggleEyes = 0;
+				}, 1000);
+			}
+		}}
+	/>
 
-<main>
-	{#if $finished}
-		<Book />
-	{:else}
-		<canvas
-			bind:this={canvas}
-			class:loaded
-			out:scale
-			style={`visibility:${loaded ? 'visible' : 'hidden'}`}
-			on:click={() => {
-				if (animator.params.wiggleRim < 1) {
-					animator.params.wiggleRim = 5;
-					animator.params.wiggleEyes = 1;
-					setTimeout(() => {
-						animator.params.wiggleRim = 0;
-						animator.params.wiggleEyes = 0;
-					}, 1000);
-				}
-			}}
-		/>
+	<div class="content">
+		{#if $activeAction?.text && ($activeState === 'running' || $activeState === 'finished' || $activeState === 'input') && showText}
+			<Typewriter text={$activeAction.text} duration={$activeAction.duration} />
+		{/if}
 
-		<div class="content">
-			{#if $activeAction?.text && ($activeState === 'running' || $activeState === 'finished' || $activeState === 'input') && showText}
-				<Typewriter text={$activeAction.text} duration={$activeAction.duration} />
-			{/if}
-
-			{#if $activeState}
-				{#if $activeState === 'suspended'}
-					<button on:click={() => $activeAction.start()}>Starten</button>
-				{:else if $activeState === 'finished'}
-					{#if $activeAction?.nextActions?.length}
-						<div>
-							{#each $activeAction.nextActions as next, i}
-								<button
-									in:scale={{ duration: 200, delay: 200 * i }}
-									on:click={() => next.action.start()}>{next.name}</button
-								>
-							{/each}
-						</div>
-					{/if}
-				{:else if $activeState === 'input'}
-					<svelte:component
-						this={$activeAction.element}
-						bind:showText={_showText}
-						callback={(v) => {
-							$activeAction.handleElementCallback(v);
-						}}
-					/>
+		{#if $activeState}
+			{#if $activeState === 'suspended'}
+				<button on:click={() => $activeAction.start()}>Starten</button>
+			{:else if $activeState === 'finished'}
+				{#if $activeAction?.nextActions?.length}
+					<div>
+						{#each $activeAction.nextActions as next, i}
+							<button
+								in:scale={{ duration: 200, delay: 200 * i }}
+								on:click={() => next.action.start()}>{next.name}</button
+							>
+						{/each}
+					</div>
 				{/if}
+			{:else if $activeState === 'input'}
+				<svelte:component
+					this={$activeAction.element}
+					bind:showText={_showText}
+					callback={(v) => {
+						$activeAction.handleElementCallback(v);
+					}}
+				/>
 			{/if}
-		</div>
-	{/if}
-</main>
+		{/if}
+	</div>
+{/if}
 
 <style>
-	main {
-		height: 100%;
-		width: 100%;
-		max-height: 100vh;
-		display: flex;
-		justify-content: center;
-		flex-direction: column;
-		align-items: center;
-	}
-
 	.content {
 		width: 90%;
 		max-width: 700px;
