@@ -11,7 +11,7 @@ app.use(assetsMiddleware, prerenderedMiddleware, kitMiddleware);
 
 app.use(
 	cors({
-		origin: 'https://silvester.jim-fx.com'
+		origin: '*'
 	})
 );
 
