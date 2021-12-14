@@ -13,8 +13,13 @@ export async function post({ body, locals }) {
 	const { action } = body;
 	console.log('Action', action);
 	switch (action) {
-		case 'start':
+		case 'start-quiz':
 			quiz.start();
+			break;
+		case 'close-question':
+		case 'close-voting':
+		case 'end-question':
+			quiz.endQuestion();
 			break;
 	}
 

@@ -34,11 +34,16 @@ export function get(apiPath: string, token?: string): Promise<Response> {
 
 // To wake up the heroku instance
 //get('api/houses');
-
+import { emit } from './ws';
 export { on, emit } from './ws';
 
 if (browser && 'jwt' in localStorage) {
-	console.log(decodeJWT(localStorage.getItem('jwt')));
+	const { jwt } = localStorage;
+	const { role } = decodeJWT(jwt);
+	console.log('DECODE', role);
+	if (role === 'ADMIN') {
+		emit('admin', jwt);
+	}
 }
 
 export function post(apiPath: string, body: unknown, token?: string): Promise<Response> {

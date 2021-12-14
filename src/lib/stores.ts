@@ -12,11 +12,31 @@ export const userData = localStorageStore('user-data', {
 	role: 'USER'
 });
 
-export const quiz: Writable<ReturnType<typeof Quiz['toJSON']>> = writable();
-on('question.state', (v: Question) => {
-	console.log('Question', v);
+type QuizType = ReturnType<typeof Quiz['toJSON']>;
+type QuestionType = ReturnType<Question['toJSON']>;
+
+export const quiz: Writable<QuizType> = writable();
+
+on('question.state', (state: string) => {
 	quiz.update((q) => {
-		q.question = v;
+		console.groupCollapsed('question.state', state);
+		q.activeQuestion.state = state as any;
+		console.log(q);
+		console.groupEnd();
+		return q;
+	});
+});
+
+on('question.active', (aq: QuestionType) => {
+	quiz.update((q) => {
+		q.activeQuestion = aq;
+		return q;
+	});
+});
+
+on('question', (v: QuestionType) => {
+	quiz.update((q) => {
+		q.activeQuestion = v;
 		return q;
 	});
 });
@@ -28,7 +48,7 @@ on('quiz.users', (users: { name: string; id: string }[]) => {
 	});
 });
 
-on('quiz.state', (v: typeof Quiz) => {
+on('quiz', (v: QuizType) => {
 	console.log('Quiz', v);
 	quiz.update((q) => {
 		q.id = v.id;

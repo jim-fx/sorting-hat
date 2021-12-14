@@ -7,8 +7,8 @@ export default class Question {
 	id: string;
 	type: 'multiple' | 'voting';
 	description: string;
-	timeout: number;
 	quiz: Quiz;
+	nextQuestion: Question;
 	state: QuestionState = 'idle';
 	answers: Answer[] = [];
 
@@ -26,10 +26,6 @@ export default class Question {
 		}
 
 		this.description = d.description;
-
-		if (d.timeout) {
-			this.timeout = d.timeout;
-		}
 	}
 
 	findAnswerById(id: string) {
@@ -47,21 +43,31 @@ export default class Question {
 		this.answers.push(answer);
 
 		if (this.state === 'voting-open') {
-			this.quiz.emit('question.state', this.toJSON());
+			this.quiz.emit('question', this.toJSON());
 		}
 	}
 
 	addAnswer(userId: string, answer: string) {
-		const a = new Answer(this, userId, answer);
-		this.answers.push(a);
+		if (this.type === 'multiple') {
+			const a = this.findAnswerById(answer);
+			a.addVote(userId);
+		} else {
+			const a = new Answer(this, userId, answer);
+			this.answers.push(a);
+		}
+		this.quiz.emitAdmin('question.answers', {
+			answers: this.answers.map((v) => v.toJSON()),
+			id: this.id
+		});
 	}
 
 	setState(s: QuestionState) {
-		console.log('Question.state', s);
+		console.log('question.state', s);
 		this.state = s;
 		switch (s) {
 			case 'open':
 				this.quiz.activeQuestion = this;
+				this.quiz.emit('question.active', this.toJSON());
 				break;
 			case 'voting-open':
 				break;
@@ -77,6 +83,7 @@ export default class Question {
 	}
 
 	end() {
+		let oldState = this.state;
 		if (this.type === 'voting') {
 			if (this.state === 'open') {
 				this.setState('voting-open');
@@ -88,6 +95,7 @@ export default class Question {
 				this.setState('closed');
 			}
 		}
+		console.log('question.setState ', oldState, ' --> ', this.state);
 		this.quiz.emit('question.state', this.state);
 	}
 

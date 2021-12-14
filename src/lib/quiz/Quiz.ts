@@ -1,22 +1,14 @@
 import Question from './Question';
 import { nanoid } from 'nanoid';
-import wssPromise from '$lib/wss';
-import { JWT_SECRET } from '$lib/config';
-import jwt from 'jsonwebtoken';
+import wss from '$lib/wss';
 import * as data from './data';
 
-async function decode(rawInput: string) {
-	return jwt.verify(rawInput, JWT_SECRET);
-}
-
-wssPromise.then((wss) => {
-	wss.on('connection', function connection(ws) {
-		console.log('Connection');
-		ws.on('message', function message(data) {
-			console.log('received: %s', data);
-		});
-	});
-});
+// const houses = {
+// 	ravenclaw: 'ra',
+// 	gryffindor: 'gr',
+// 	slytherin: 'sl',
+// 	hufflepuff: 'hu'
+// };
 
 export default class Quiz {
 	name: 'Quiz' = 'Quiz';
@@ -34,21 +26,29 @@ export default class Quiz {
 	start() {
 		this.state = 'running';
 		this.questions[0].start();
-		this.emit('quiz.state', this.toJSON());
+		this.emit('quiz', this.toJSON());
+		this.emitAdmin('quiz', this.toJSON(true));
 	}
 
 	async emit(eventType: string, data: unknown) {
-		console.log('Quiz.emit ' + eventType, data);
-		const wss = await wssPromise;
-		wss?.clients.forEach(function each(client) {
-			client.send(JSON.stringify({ type: eventType, data }));
-		});
+		console.log('quiz.emit ' + eventType, data);
+		(await wss).emit(eventType, data);
 	}
 
-	registerUser(username: string): string {
+	async emitAdmin(eventType: string, data: unknown) {
+		console.log('quiz.emitAdmin ' + eventType, data);
+		(await wss).emitAdmin(eventType, data);
+	}
+
+	addAnswer(userId: string, answerId: string) {
+		this?.activeQuestion.addAnswer(userId, answerId);
+	}
+
+	registerUser(username: string, house: string): string {
 		if (this.state !== 'registration') return;
 		const user = {
 			name: username,
+			house,
 			id: nanoid()
 		};
 		this.users.push(user);
@@ -58,6 +58,12 @@ export default class Quiz {
 
 	load(dataSet: DataSet) {
 		this.questions = dataSet.questions.map((v) => new Question(this, v));
+		this.questions.forEach((q, i) => {
+			if (i < this.questions.length) {
+				q.nextQuestion = this.questions[i + 1];
+			}
+		});
+
 		this.description = dataSet.description;
 	}
 
@@ -66,7 +72,15 @@ export default class Quiz {
 	}
 
 	endQuestion() {
-		this.activeQuestion.end();
+		if (this.activeQuestion.state === 'closed') {
+			if (this.activeQuestion.nextQuestion) {
+				this.activeQuestion.nextQuestion.start();
+			} else {
+				console.log('DUnzooo');
+			}
+		} else {
+			this?.activeQuestion.end();
+		}
 	}
 
 	toJSON(isAdmin = false) {

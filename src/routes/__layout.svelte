@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import Overlay from '$lib/elements/Overlay.svelte';
 	import { page } from '$app/stores';
+	import { Path } from 'three';
 
 	onMount(async () => {
 		const res = await c.get('api/quiz');
@@ -17,7 +18,7 @@
 	<slot />
 </main>
 
-{#if $quiz?.state === 'registration' && !$page?.path.includes('quiz')}
+{#if $quiz?.state === 'registration' && !$page?.path.includes('quiz') && !$page?.path.includes('admin')}
 	<a href="/quiz">Enter Quiz</a>
 {/if}
 

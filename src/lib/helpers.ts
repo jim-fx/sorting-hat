@@ -25,7 +25,6 @@ function decodeBase64(s) {
 }
 
 export function decodeJWT(input: string) {
-	console.log('DECODE', input);
 	const base64Url = input.split('.')[1];
 	const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
 	const res = decodeBase64(base64);
