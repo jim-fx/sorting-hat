@@ -16,9 +16,11 @@ export const handle: Handle = async ({ request, resolve }) => {
 
 	const response = await resolve(request);
 
+	console.log(request, response);
+
 	return {
 		...response,
-		status: request.method === 'OPTION' ? 200 : response.status,
+		status: 200,
 		headers: {
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Headers': 'Content-Type, Authentication',
