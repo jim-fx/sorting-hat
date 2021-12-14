@@ -16,7 +16,7 @@ export const handle: Handle = async ({ request, resolve }) => {
 
 	const response = await resolve(request);
 
-	console.log(request, response);
+	console.log('HEADERS', request.headers);
 
 	return {
 		...response,
@@ -24,7 +24,7 @@ export const handle: Handle = async ({ request, resolve }) => {
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Headers': 'Content-Type, Authentication',
 			'Access-Control-Request-Headers': 'Content-Type, Authentication',
-			'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+			'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, OPTION',
 			'Access-Control-Allow-Credentials': true,
 			...response.headers
 		}
