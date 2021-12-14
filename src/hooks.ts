@@ -20,6 +20,8 @@ export const handle: Handle = async ({ request, resolve }) => {
 		...response,
 		headers: {
 			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Headers': 'Content-Type',
+			'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 			...response.headers
 		}
 	};
