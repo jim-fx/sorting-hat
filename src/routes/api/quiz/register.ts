@@ -3,6 +3,14 @@ import Quiz from '$lib/quiz';
 import jwt from 'jsonwebtoken';
 
 export async function post({ body }) {
+	if (typeof body === 'string') {
+		try {
+			body = JSON.stringify(body);
+		} catch (error) {
+			console.log('Error Parsing Body');
+		}
+	}
+
 	const { username = body.name, house } = body;
 
 	console.log('Registration', { username, house });
