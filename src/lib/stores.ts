@@ -41,7 +41,7 @@ on('question', (v: QuestionType) => {
 	});
 });
 
-on('quiz.users', (users: { name: string; id: string }[]) => {
+on('quiz.users', (users: { name: string; id: string; house: string }[]) => {
 	quiz.update((v) => {
 		v.users = users;
 		return v;
@@ -49,7 +49,6 @@ on('quiz.users', (users: { name: string; id: string }[]) => {
 });
 
 on('quiz', (v: QuizType) => {
-	console.log('Quiz', v);
 	quiz.update((q) => {
 		q.id = v.id;
 		q.state = v.state;

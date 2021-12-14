@@ -26,6 +26,7 @@ button {
 	background: black;
 	border: none;
 	padding: 10px;
+	cursor: pointer;
 	font-family: Chantelli;
 	margin: 10px;
 	margin-left: 0px;

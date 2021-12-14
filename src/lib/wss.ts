@@ -15,7 +15,7 @@ const wss: Promise<WSServer> = new Promise((res) =>
 
 		const wss = global.wss as WebSocketServer;
 
-		wss.on('connection', function connection(ws) {
+		wss?.on('connection', function connection(ws) {
 			console.log('New Connection');
 			ws.on('message', async function message(msg: Buffer) {
 				try {
@@ -49,7 +49,7 @@ const wss: Promise<WSServer> = new Promise((res) =>
 		}
 
 		function emit(eventType: string, data?: unknown) {
-			wss.clients.forEach(function each(client) {
+			wss?.clients.forEach(function each(client) {
 				client.send(JSON.stringify({ type: eventType, data }));
 			});
 		}

@@ -25,8 +25,10 @@ function decodeBase64(s) {
 }
 
 export function decodeJWT(input: string) {
+	if (!input) return {};
 	const base64Url = input.split('.')[1];
-	const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+	const base64 = base64Url?.replace(/-/g, '+').replace(/_/g, '/');
+	if (!base64) return {};
 	const res = decodeBase64(base64);
 	return JSON.parse(res);
 }

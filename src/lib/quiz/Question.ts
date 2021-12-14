@@ -11,6 +11,7 @@ export default class Question {
 	nextQuestion: Question;
 	state: QuestionState = 'idle';
 	answers: Answer[] = [];
+	correctAnswer: string;
 
 	constructor(q: Quiz, d: QuestionData) {
 		this.quiz = q;
@@ -23,6 +24,10 @@ export default class Question {
 			this.type = 'multiple';
 		} else {
 			this.type = 'voting';
+		}
+
+		if (d.correct) {
+			this.correctAnswer = this.answers[d.correct].id;
 		}
 
 		this.description = d.description;
@@ -99,12 +104,13 @@ export default class Question {
 		this.quiz.emit('question.state', this.state);
 	}
 
-	toJSON() {
+	toJSON(isAdmin = false) {
 		return {
 			state: this.state,
 			type: this.type,
 			answers: this.answers.map((q) => q.toJSON()),
 			description: this.description,
+			correctAnswer: (this.state === 'closed' || isAdmin) && this.correctAnswer,
 			id: this.id
 		};
 	}

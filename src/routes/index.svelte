@@ -71,8 +71,6 @@
 	$: activeState = $activeAction && $activeAction.state;
 
 	onMount(() => {
-		pointer.init();
-
 		loadModel();
 
 		const renderer = new WebGLRenderer({ canvas, alpha: true });

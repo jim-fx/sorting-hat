@@ -4,11 +4,12 @@
 	import { onMount } from 'svelte';
 	import Overlay from '$lib/elements/Overlay.svelte';
 	import { page } from '$app/stores';
-	import { Path } from 'three';
+	import pointerStore from '$lib/pointerStore';
 
 	onMount(async () => {
 		const res = await c.get('api/quiz');
 		quiz.set(await res.json());
+		pointerStore.init();
 	});
 </script>
 

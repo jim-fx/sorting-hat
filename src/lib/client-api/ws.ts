@@ -7,10 +7,11 @@ function handleMessage(msg: string) {
 	if (msg in events) return events[msg].forEach((cb) => cb());
 	try {
 		const { type, data } = JSON.parse(msg);
-		if (type in events) return events[type].forEach((cb) => cb(data));
-		console.groupCollapsed('ws:received ' + type);
+		console.groupCollapsed('ws:received ' + type, type in events);
 		console.log(data);
+		console.log(events);
 		console.groupEnd();
+		if (type in events) return events[type].forEach((cb) => cb(data));
 	} catch (err) {
 		console.error(err);
 	}

@@ -19,7 +19,7 @@ export default class Quiz {
 
 	state: 'registration' | 'running' | 'results' = 'registration';
 
-	users: { name: string; id: string }[] = [];
+	users: { name: string; id: string; house: string }[] = [];
 
 	constructor() {}
 

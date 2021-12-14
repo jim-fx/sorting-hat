@@ -1,5 +1,6 @@
 import { browser } from '$app/env';
 import { decodeJWT } from '$lib/helpers';
+import { userData } from '$lib/stores';
 
 const { VITE_API_URL = '' } = import.meta.env as unknown as { VITE_API_URL: string };
 
@@ -40,9 +41,12 @@ export { on, emit } from './ws';
 if (browser && 'jwt' in localStorage) {
 	const { jwt } = localStorage;
 	const { role } = decodeJWT(jwt);
-	console.log('DECODE', role);
 	if (role === 'ADMIN') {
 		emit('admin', jwt);
+		userData.update((v) => {
+			v.role = role;
+			return v;
+		});
 	}
 }
 
