@@ -10,10 +10,11 @@ export default class Answer {
 
 	votes: Set<string> = new Set();
 
-	constructor(q: Question, value: string, userId: string = nanoid()) {
-		this.id = userId;
+	constructor(q: Question, value: string, userId?: string) {
+		this.id = nanoid();
 		this.question = q;
 		this.value = value;
+		this.userId = userId;
 	}
 
 	addVote(userId: string) {

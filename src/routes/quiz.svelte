@@ -12,11 +12,16 @@
 	const quizUserData = localStorageStore('quiz-user-data', { id: '', qid: '', token: '' });
 
 	$: quizState = $quiz?.state;
-	$: questionState = $quiz?.activeQuestion?.state;
+	$: activeQuestion = $quiz?.activeQuestion;
+	$: questionState = activeQuestion?.state;
 	$: users = $quiz?.users;
-	$: registered = $quizUserData.qid === $quiz?.id;
-	$: answeredActiveQuestion = $questionStore?.qid === $quiz?.activeQuestion?.id;
-	$: correctAnswer = $quiz?.activeQuestion?.correctAnswer === $questionStore?.aid;
+	let textValue: string;
+	$: registered = $quizUserData?.id && $quizUserData?.qid === $quiz?.id;
+	$: answeredActiveQuestion =
+		activeQuestion?.type === 'multiple'
+			? $questionStore?.qid === activeQuestion?.id
+			: $questionStore?.qid === activeQuestion?.id && $questionStore?.value;
+	$: correctAnswer = activeQuestion?.correctAnswer === $questionStore?.aid;
 
 	$: if (questionState === 'closed' && correctAnswer) {
 		setTimeout(() => {
@@ -34,11 +39,29 @@
 	}
 
 	async function handleAnswer({ detail }: { detail: string }) {
-		await c.post('api/quiz/answer', detail, $quizUserData.token);
+		const res = await c.post('api/quiz/answer', detail, $quizUserData.token);
+		if (!res.ok) return;
+		const data = await res.json();
+		$questionStore.qid = activeQuestion.id;
+		$questionStore.value = detail;
+		if (activeQuestion.type === 'voting' && data.id) {
+			$questionStore.aid = data.id;
+		}
 	}
 
-	async function handleTextAnswer() {}
+	async function handleVote({ detail: voteId }) {
+		const res = await c.post('api/quiz/vote', voteId, $quizUserData.token);
+		console.log(await res.json());
+	}
+
+	function handleKeyDown({ key }) {
+		if (key === 'L') {
+			console.log($questionStore, $quiz);
+		}
+	}
 </script>
+
+<svelte:window on:keydown={handleKeyDown} />
 
 {#if quizState === 'registration'}
 	<Card flipped={registered} bind:showConfetti>
@@ -58,14 +81,21 @@
 			{/if}
 		</div>
 	</Card>
-{:else if quizState === 'running' && $quiz?.activeQuestion?.id}
-	<Card flipped={questionState !== 'closed' && answeredActiveQuestion} bind:showConfetti>
+{:else if quizState === 'running' && $quiz?.activeQuestion?.id && registered}
+	<Card
+		flipped={questionState !== 'closed' &&
+			answeredActiveQuestion &&
+			questionState !== 'voting-open'}
+		bind:showConfetti
+	>
 		<div slot="front">
 			<Question
+				bind:textValue
 				bind:questionStore
+				on:vote={handleVote}
 				on:answer={handleAnswer}
+				on:text={handleAnswer}
 				question={$quiz.activeQuestion}
-				on:text={handleTextAnswer}
 			/>
 		</div>
 
@@ -76,16 +106,27 @@
 		</div>
 
 		<div slot="info">
-			{#if answeredActiveQuestion && questionState !== 'closed'}
+			{#if answeredActiveQuestion && questionState !== 'closed' && questionState !== 'voting-open'}
 				<p>Warte bis die Frage beendet wird.</p>
 			{/if}
 		</div>
 	</Card>
-{:else if quizState === 'results'}
+{:else if quizState === 'results' && registered}
 	<p>Results</p>
+{:else}
+	<p>Quiz Already started</p>
 {/if}
 
 <style>
+	a {
+		color: white;
+		background: black;
+	}
+
+	:global(main) {
+		overflow: hidden;
+	}
+
 	#registration-success {
 		font-size: larger;
 		text-align: center;

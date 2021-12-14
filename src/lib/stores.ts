@@ -41,10 +41,24 @@ on('question', (v: QuestionType) => {
 	});
 });
 
+on('question.answer', (v: string) => {
+	quiz.update((q) => {
+		q.activeQuestion.correctAnswer = v;
+		return q;
+	});
+});
+
 on('quiz.users', (users: { name: string; id: string; house: string }[]) => {
 	quiz.update((v) => {
 		v.users = users;
 		return v;
+	});
+});
+
+on('quiz.state', (s: QuizType['state']) => {
+	quiz.update((q) => {
+		q.state = s;
+		return q;
 	});
 });
 

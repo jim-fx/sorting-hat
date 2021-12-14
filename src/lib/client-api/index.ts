@@ -1,6 +1,8 @@
 import { browser } from '$app/env';
 import { decodeJWT } from '$lib/helpers';
-import { userData } from '$lib/stores';
+// To wake up the heroku instance
+//get('api/houses');
+import { emit } from './ws';
 
 const { VITE_API_URL = '' } = import.meta.env as unknown as { VITE_API_URL: string };
 
@@ -13,9 +15,14 @@ async function send(
 		options['body'] = JSON.stringify(body);
 	}
 
-	if ('localStorage' in globalThis && 'jwt' in localStorage) {
+	let _token = 'localStorage' in globalThis ? localStorage.getItem('jwt') : '';
+	if (token) {
+		_token = token;
+	}
+
+	if (_token) {
 		options['headers'] = {
-			Authentication: `Bearer ${token || localStorage.getItem('jwt')}`
+			Authentication: `Bearer ${token || _token}`
 		};
 	}
 
@@ -26,6 +33,10 @@ async function send(
 
 	const url = (VITE_API_URL ? VITE_API_URL + '/' : '/') + _url;
 
+	console.groupCollapsed('send.' + method.toLowerCase(), url);
+	console.log({ body, token, headers: options['headers'] });
+	console.groupEnd();
+
 	return fetch(url, options);
 }
 
@@ -33,20 +44,20 @@ export function get(apiPath: string, token?: string): Promise<Response> {
 	return send(apiPath, { method: 'GET', token });
 }
 
-// To wake up the heroku instance
-//get('api/houses');
-import { emit } from './ws';
-export { on, emit } from './ws';
+export { emit, on } from './ws';
 
-if (browser && 'jwt' in localStorage) {
-	const { jwt } = localStorage;
-	const { role } = decodeJWT(jwt);
-	if (role === 'ADMIN') {
-		emit('admin', jwt);
-		userData.update((v) => {
-			v.role = role;
-			return v;
-		});
+export function setUserStore(u) {
+	if (browser && 'jwt' in localStorage) {
+		const { jwt } = localStorage;
+		const { role } = decodeJWT(jwt);
+		console.log('Got Role', role, u);
+		if (role === 'ADMIN') {
+			u.update((v) => {
+				v.role = role;
+				return v;
+			});
+			emit('admin', jwt);
+		}
 	}
 }
 

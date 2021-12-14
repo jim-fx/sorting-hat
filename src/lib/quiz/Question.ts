@@ -37,37 +37,46 @@ export default class Question {
 		return this.answers.find((a) => a.id === id);
 	}
 
-	voteForAnswer(userId: string, answerId: string) {
-		let answer = this.findAnswerById(userId);
-		if (answer) {
-			answer.value = answerId;
-			return;
-		}
-
-		answer = new Answer(this, answerId, userId);
-		this.answers.push(answer);
+	voteForAnswer(answerId: string, userId: string) {
+		this.answers = this.answers.map((a) => {
+			if (a.votes.has(userId)) {
+				if (a.id !== answerId) a.votes.delete(userId);
+			} else if (a.id === answerId) {
+				a.addVote(userId);
+			}
+			return a;
+		});
 
 		if (this.state === 'voting-open') {
 			this.quiz.emit('question', this.toJSON());
 		}
 	}
 
-	addAnswer(userId: string, answer: string) {
+	addAnswer(userId: string, value: string) {
+		let a: Answer;
+
 		if (this.type === 'multiple') {
-			const a = this.findAnswerById(answer);
+			a = this.findAnswerById(value);
 			a.addVote(userId);
 		} else {
-			const a = new Answer(this, userId, answer);
+			a = this.answers.filter((a) => a.userId === userId)[0];
+			if (a) {
+				a.value = value;
+			} else {
+				a = new Answer(this, value, userId);
+			}
 			this.answers.push(a);
 		}
 		this.quiz.emitAdmin('question.answers', {
 			answers: this.answers.map((v) => v.toJSON()),
 			id: this.id
 		});
+
+		return a.toJSON();
 	}
 
 	setState(s: QuestionState) {
-		console.log('question.state', s);
+		let oldState = this.state;
 		this.state = s;
 		switch (s) {
 			case 'open':
@@ -75,11 +84,20 @@ export default class Question {
 				this.quiz.emit('question.active', this.toJSON());
 				break;
 			case 'voting-open':
+				if (this.type === 'voting') {
+					this.quiz.emit('question', this.toJSON());
+				}
 				break;
 			case 'closed':
+				if (this.type === 'voting') {
+					const answers = this.answers.sort((a, b) => (a.votes.size > b.votes.size ? 1 : -1));
+					this.correctAnswer = answers[0].id;
+				}
+				this.quiz.emit('question.answer', this.correctAnswer);
 				break;
 		}
-		this.quiz.emit('question', this.toJSON());
+		console.log('question.state ', oldState + ' --> ' + this.state);
+		this.quiz.emit('question.state', this.state);
 	}
 
 	start() {
@@ -88,7 +106,6 @@ export default class Question {
 	}
 
 	end() {
-		let oldState = this.state;
 		if (this.type === 'voting') {
 			if (this.state === 'open') {
 				this.setState('voting-open');
@@ -100,8 +117,6 @@ export default class Question {
 				this.setState('closed');
 			}
 		}
-		console.log('question.setState ', oldState, ' --> ', this.state);
-		this.quiz.emit('question.state', this.state);
 	}
 
 	toJSON(isAdmin = false) {

@@ -36,6 +36,7 @@
 	"dependencies": {
 		"@prisma/client": "^3.6.0",
 		"bcrypt": "^5.0.1",
+		"cors": "^2.8.5",
 		"googleapis": "^92.0.0",
 		"jsonwebtoken": "^8.5.1",
 		"mongodb": "^3.6.0",

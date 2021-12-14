@@ -2,6 +2,7 @@
 	export let flipped = false;
 
 	import { store } from '$lib/pointerStore';
+	import { scale } from 'svelte/transition';
 	import Confetti from './Confetti.svelte';
 
 	let showConfetti1;
@@ -18,7 +19,7 @@
 	$: strength = flipped ? 1 : 10;
 </script>
 
-<div class="scene" class:flipped>
+<div class="scene" class:flipped in:scale>
 	<Confetti
 		amount={200}
 		--opacity="0.4"

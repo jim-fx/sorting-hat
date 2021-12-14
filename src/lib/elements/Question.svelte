@@ -9,11 +9,18 @@
 
 	export let question: ReturnType<Question['toJSON']>;
 
-	export const questionStore = localStorageStore('active-question', { qid: '', aid: '' });
+	$: users = $quiz.users;
+
+	export const questionStore = localStorageStore('active-question', {
+		qid: '',
+		aid: '',
+		value: '',
+		vote: ''
+	});
 
 	$: correct = question?.correctAnswer === $questionStore.aid;
 
-	let textValue: string;
+	export let textValue: string;
 
 	function handleAnswer(id) {
 		if (id === $questionStore.qid) return;
@@ -25,6 +32,21 @@
 
 	function handleFreetext(v: string) {
 		dispatch('text', v);
+	}
+
+	function handleVote(v) {
+		$questionStore.vote = v;
+		dispatch('vote', v);
+	}
+
+	function getNameForUID(uid: string) {
+		const user = users.find((u) => u.id === uid);
+
+		if (user) {
+			return user?.name;
+		}
+
+		return '';
 	}
 </script>
 
@@ -43,14 +65,74 @@
 			on:click={() => handleAnswer(answer.id)}>{answer.value}</button
 		>
 	{/each}
-{:else}
+{:else if question.state === 'open'}
 	<textarea name="" id="" cols="30" rows="10" bind:value={textValue} />
 	<button disabled={!textValue?.length} on:click={() => handleFreetext(textValue)}
 		>abschicken</button
 	>
+{:else if question.state === 'voting-open'}
+	<p>Vote for the best answer</p>
+	<div class="vote-wrapper">
+		{#each question.answers as a}
+			<button
+				class="vote-button"
+				class:selected={$questionStore.vote === a.id}
+				on:click={() => handleVote(a.id)}>{$questionStore.vote !== a.id ? '☐' : '☒'}</button
+			>
+			<!-- <p class="vote-amount">{a.votes.length}</p> -->
+			<p class="vote-value">{a.value}</p>
+		{/each}
+	</div>
+{:else if question.state === 'closed'}
+	<div class="vote-wrapper">
+		{#each question.answers.sort((a, b) => (a.votes.length > b.votes.length ? -1 : 1)) as a, i}
+			<p class="vote-amount">
+				{a.votes.length}
+			</p>
+			<p class="vote-value">
+				{a.value}
+				{#if i === 0}
+					<br />
+					({getNameForUID(a.userId)})
+				{/if}
+			</p>
+		{/each}
+	</div>
 {/if}
 
 <style>
+	.vote-wrapper {
+		max-height: 340px;
+		width: 100%;
+		overflow-y: auto;
+		box-sizing: border-box;
+
+		display: grid;
+		grid-template-columns: min-content 1fr;
+		grid-template-rows: repeat(20px);
+		gap: 6px;
+	}
+
+	.vote-button {
+		margin: 0;
+	}
+
+	.vote-value {
+		line-break: anywhere;
+	}
+
+	.vote-amount {
+		text-align: center;
+	}
+
+	.vote-wrapper > p {
+		font-size: 1em;
+		color: white;
+		background: black;
+		padding: 5px;
+		box-sizing: border-box;
+	}
+
 	textarea {
 		max-width: 100%;
 		resize: none;

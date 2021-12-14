@@ -12,6 +12,13 @@
 		console.log($quiz);
 	}
 
+	async function handleKeyDown({ key }) {
+		if (key === 'L') {
+			const q = await c.get('api/quiz');
+			console.log(await q.json());
+		}
+	}
+
 	onMount(() => {
 		c.emit('quiz.admin', $userData);
 		c.on('question.answers', (d: { id: string; answers: any }) => {
@@ -19,6 +26,8 @@
 		});
 	});
 </script>
+
+<svelte:window on:keydown={handleKeyDown} />
 
 <h1>{quizState}.{questionState}</h1>
 {#if quizState === 'registration'}

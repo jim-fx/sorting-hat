@@ -41,7 +41,11 @@ export default class Quiz {
 	}
 
 	addAnswer(userId: string, answerId: string) {
-		this?.activeQuestion.addAnswer(userId, answerId);
+		return this?.activeQuestion.addAnswer(userId, answerId);
+	}
+
+	addVote(userId: string, answerId: string) {
+		return this?.activeQuestion.voteForAnswer(answerId, userId);
 	}
 
 	registerUser(username: string, house: string): string {
@@ -76,7 +80,8 @@ export default class Quiz {
 			if (this.activeQuestion.nextQuestion) {
 				this.activeQuestion.nextQuestion.start();
 			} else {
-				console.log('DUnzooo');
+				this.state = 'results';
+				this.emit('quiz.state', this.state);
 			}
 		} else {
 			this?.activeQuestion.end();
