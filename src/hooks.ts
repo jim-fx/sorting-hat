@@ -20,7 +20,6 @@ export const handle: Handle = async ({ request, resolve }) => {
 
 	return {
 		...response,
-		status: 200,
 		headers: {
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Headers': 'Content-Type, Authentication',
