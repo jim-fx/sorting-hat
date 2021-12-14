@@ -7,7 +7,13 @@ const { PORT = 3000 } = process.env;
 
 const app = polka();
 
+const c = cors();
+
+app.use(c);
+
 app.use(assetsMiddleware, prerenderedMiddleware, kitMiddleware);
+
+app.options('*', c);
 
 app.listen(PORT, () => {
 	console.log(`> Running on localhost:${PORT}`);
