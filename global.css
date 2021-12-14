@@ -26,10 +26,15 @@ button {
 	background: black;
 	border: none;
 	padding: 10px;
+	cursor: pointer;
 	font-family: Chantelli;
 	margin: 10px;
 	margin-left: 0px;
 	font-size: 1.2em;
+}
+
+button:disabled {
+	opacity: 0.6;
 }
 
 input[type='text'] {
