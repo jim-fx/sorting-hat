@@ -23,7 +23,11 @@ function createSocket(): WebSocket {
 
 	let url = VITE_API_URL || window.location.host;
 
-	let _s = new WebSocket('ws://' + url.replace('https://', '').replace('http://', ''));
+	const isSecure = window.location.protocol === 'https://';
+
+	let _s = new WebSocket(
+		`ws${isSecure ? 's' : ''}://` + url.replace('https://', '').replace('http://', '')
+	);
 	_s.onmessage = (ev) => {
 		handleMessage(ev.data);
 	};
