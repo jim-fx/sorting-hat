@@ -10,7 +10,7 @@ export const handle: Handle = async ({ request, resolve }) => {
 			request.locals.user = decoded;
 			request.locals.isAdmin = decoded?.user?.role !== 'ADMIN';
 		} catch (err) {
-			console.log('');
+			console.error(err);
 		}
 	}
 

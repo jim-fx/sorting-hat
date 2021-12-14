@@ -20,6 +20,7 @@ export async function get() {
 		headers: {
 			'Content-Type': 'text/plain'
 		},
+		status: 200,
 		body: Object.entries(houses)
 			.map(([name, members]) => {
 				return { name, members };

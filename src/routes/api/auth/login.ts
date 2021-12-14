@@ -29,6 +29,7 @@ export async function post({ body }) {
 	});
 
 	return {
+		status: 200,
 		body: {
 			token
 		}
