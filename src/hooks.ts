@@ -14,5 +14,17 @@ export const handle: Handle = async ({ request, resolve }) => {
 		}
 	}
 
-	return resolve(request);
+	const response = await resolve(request);
+
+	return {
+		...response,
+		headers: {
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Headers': 'Content-Type, Authentication',
+			'Access-Control-Request-Headers': 'Content-Type, Authentication',
+			'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+			'Access-Control-Allow-Credentials': true,
+			...response.headers
+		}
+	};
 };

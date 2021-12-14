@@ -9,12 +9,6 @@ const app = polka();
 
 app.use(assetsMiddleware, prerenderedMiddleware, kitMiddleware);
 
-app.use(
-	cors({
-		origin: '*'
-	})
-);
-
 app.listen(PORT, () => {
 	console.log(`> Running on localhost:${PORT}`);
 });
