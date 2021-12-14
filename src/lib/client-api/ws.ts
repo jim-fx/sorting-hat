@@ -23,7 +23,7 @@ function createSocket(): WebSocket {
 
 	let url = VITE_API_URL || window.location.host;
 
-	const isSecure = window.location.protocol === 'https://';
+	const isSecure = window.location.protocol.includes('s');
 
 	let _s = new WebSocket(
 		`ws${isSecure ? 's' : ''}://` + url.replace('https://', '').replace('http://', '')
