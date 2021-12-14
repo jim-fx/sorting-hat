@@ -19,7 +19,7 @@ export const handle: Handle = async ({ request, resolve }) => {
 	return {
 		...response,
 		headers: {
-			'Access-Control-Allow-Origin': 'silvester.jim-fx.com',
+			'Access-Control-Allow-Origin': 'https://silvester.jim-fx.com',
 			'Access-Control-Allow-Headers': 'Content-Type, Authentication',
 			'Access-Control-Request-Headers': 'Content-Type, Authentication',
 			'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
