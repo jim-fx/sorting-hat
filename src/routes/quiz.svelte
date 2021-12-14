@@ -127,6 +127,13 @@
 		overflow: hidden;
 	}
 
+	div[slot='front'] {
+		display: flex;
+		flex-direction: column;
+		align-content: center;
+		align-items: center;
+	}
+
 	#registration-success {
 		font-size: larger;
 		text-align: center;

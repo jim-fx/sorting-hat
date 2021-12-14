@@ -53,9 +53,6 @@
 <p class="description">{question.description}</p>
 
 {#if question.type === 'multiple'}
-	{#if question.state === 'closed'}
-		<p class="res" class:correct>{correct ? 'Richtig' : 'Falsch'}</p>
-	{/if}
 	{#each question.answers as answer}
 		<button
 			class="answer"
