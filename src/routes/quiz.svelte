@@ -5,6 +5,7 @@
 	import { decodeJWT } from '$lib/helpers';
 	import Question from '$lib/elements/Question.svelte';
 	import Card from '$lib/elements/Card.svelte';
+	import Timer from '$lib/elements/Timer.svelte';
 
 	let showConfetti;
 
@@ -82,6 +83,9 @@
 		<div slot="info" id="registration-success">
 			{#if registered}
 				<p>Warte bis das Quiz beginnt</p>
+				{#if $quiz.startsAt}
+					<Timer endsAt={$quiz.startsAt} />
+				{/if}
 			{/if}
 		</div>
 	</Card>

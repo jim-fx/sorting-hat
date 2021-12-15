@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { quiz } from '$lib/stores';
 	import Pattern from './pattern.svelte';
 </script>
 
-<div class="wrapper">
+<div class="overlay-wrapper">
 	<div class="pattern-wrapper">
 		<Pattern />
 	</div>
@@ -26,14 +25,14 @@
 </div>
 
 <style>
-	.wrapper {
+	.overlay-wrapper {
 		position: fixed;
 		opacity: 0.9;
 		z-index: -1;
 	}
 
 	@media only screen and (max-width: 500px) {
-		.wrapper {
+		.overlay-wrapper {
 			opacity: 0.4;
 		}
 	}

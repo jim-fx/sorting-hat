@@ -12,6 +12,13 @@ export async function post({ body, locals }) {
 	const { action } = body;
 
 	switch (action) {
+		case 'start-quiz-timer':
+			const { time } = body;
+			quiz.startWithTimer(time);
+			break;
+		case 'end-quiz':
+			quiz.load();
+			break;
 		case 'start-quiz':
 			quiz.start();
 			break;
@@ -20,6 +27,11 @@ export async function post({ body, locals }) {
 		case 'end-question':
 			quiz.endQuestion();
 			break;
+		default:
+			console.log('Unknown Action', action);
+			return {
+				status: 404
+			};
 	}
 
 	return {

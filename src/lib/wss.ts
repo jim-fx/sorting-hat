@@ -16,7 +16,10 @@ const wss: Promise<WSServer> = new Promise((res) =>
 		const wss = global.wss as WebSocketServer;
 
 		wss?.on('connection', function connection(ws) {
-			console.log('New Connection');
+			if ('connection' in events) {
+				events['connection'].forEach((cb) => cb(ws));
+			}
+			console.log('socket: new connection');
 			ws.on('message', async function message(msg: Buffer) {
 				try {
 					const { type, data } = JSON.parse(msg.toString('utf-8'));

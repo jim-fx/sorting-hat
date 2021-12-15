@@ -7,6 +7,7 @@ specifiers:
   '@sveltejs/adapter-static': next
   '@sveltejs/kit': ^1.0.0-next.201
   '@types/three': ^0.134.0
+  '@types/ws': ^8.2.2
   '@typescript-eslint/eslint-plugin': ^4.31.1
   '@typescript-eslint/parser': ^4.31.1
   bcrypt: ^5.0.1
@@ -32,6 +33,7 @@ specifiers:
   svelte-knobby: ^0.3.3
   svelte-preprocess: ^4.9.4
   svelte-range-slider-pips: ^2.0.0
+  svelte-sortable-list: ^1.1.0
   three: ^0.135.0
   tslib: ^2.3.1
   typeorm: ^0.2.41
@@ -41,6 +43,7 @@ specifiers:
 
 dependencies:
   '@prisma/client': 3.6.0_prisma@3.6.0
+  '@types/ws': 8.2.2
   bcrypt: 5.0.1
   cors: 2.8.5
   googleapis: 92.0.0
@@ -55,6 +58,7 @@ dependencies:
   svelte-cubed: 0.2.1
   svelte-knobby: 0.3.3_svelte@3.44.2
   svelte-range-slider-pips: 2.0.0
+  svelte-sortable-list: 1.1.0_svelte@3.44.2
   three: 0.135.0
   typeorm: 0.2.41_mongodb@3.6.6+sqlite3@5.0.2
   vite-plugin-glsl: 0.0.5
@@ -312,7 +316,6 @@ packages:
 
   /@types/node/16.11.11:
     resolution: {integrity: sha512-KB0sixD67CeecHC33MYn+eYARkqTheIRNuu97y2XMjR7Wu3XibO1vaY6VBV6O/a89SPI81cEUIYT87UqUWlZNw==}
-    dev: true
 
   /@types/pug/2.0.5:
     resolution: {integrity: sha512-LOnASQoeNZMkzexRuyqcBBDZ6rS+rQxUMkmj5A0PkhhiSZivLIuz6Hxyr1mkGoEZEkk66faROmpMi4fFkrKsBA==}
@@ -330,6 +333,12 @@ packages:
 
   /@types/unist/2.0.6:
     resolution: {integrity: sha512-PBjIUxZHOuj0R15/xuwJYjFi+KZdNFrehocChv4g5hu6aFroHue8m0lBP0POdK2nKzbw0cgV1mws8+V/JAcEkQ==}
+    dev: false
+
+  /@types/ws/8.2.2:
+    resolution: {integrity: sha512-NOn5eIcgWLOo6qW8AcuLZ7G8PycXu0xTxxkS6Q18VWFxgPUSOwV0pBj2a/4viNZVu25i7RIB7GttdkAIUUXOOg==}
+    dependencies:
+      '@types/node': 16.11.11
     dev: false
 
   /@types/zen-observable/0.8.3:
@@ -2919,6 +2928,14 @@ packages:
 
   /svelte-range-slider-pips/2.0.0:
     resolution: {integrity: sha512-Gsjznv437zHD3HJtwJ4xODoFssLWiQZ0jGuNI6n3dw2rfiRPddW+0fT8ue0FKSwqCG4QTLKcXFsS01lhYjGOQw==}
+    dev: false
+
+  /svelte-sortable-list/1.1.0_svelte@3.44.2:
+    resolution: {integrity: sha512-K8axS2OEJhN8KI/aXx1LEJkMGZTkR13U191nVhvN0BImZpNmFJ10Zy8K9T0EAg6chB6/hz3/hOeFoe2RVZylSw==}
+    peerDependencies:
+      svelte: ^3.4.1
+    dependencies:
+      svelte: 3.44.2
     dev: false
 
   /svelte-undo/1.0.2_svelte@3.44.2:

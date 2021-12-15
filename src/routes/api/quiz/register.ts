@@ -2,7 +2,7 @@ import { JWT_SECRET } from '$lib/config';
 import Quiz from '$lib/quiz';
 import jwt from 'jsonwebtoken';
 
-export async function post({ body }) {
+export async function post({ body, locals }) {
 	if (typeof body === 'string') {
 		try {
 			body = JSON.stringify(body);
@@ -18,6 +18,17 @@ export async function post({ body }) {
 	if (!username || !house) {
 		return {
 			status: 400
+		};
+	}
+
+	let u;
+	if (locals?.user?.id) {
+		u = Quiz.findUserByID(locals.user.id);
+	}
+
+	if (u) {
+		return {
+			status: 401
 		};
 	}
 

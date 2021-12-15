@@ -69,10 +69,10 @@ export default class Question {
 			}
 			this.answers.push(a);
 		}
-		this.quiz.emitAdmin('question.answers', {
-			answers: this.answers.map((v) => v.toJSON()),
-			id: this.id
-		});
+		this.quiz.emitAdmin(
+			'question.answers',
+			this.answers.map((v) => v.toJSON())
+		);
 
 		return a.toJSON();
 	}
@@ -95,7 +95,8 @@ export default class Question {
 					const answers = this.answers.sort((a, b) => (a.votes.size > b.votes.size ? 1 : -1));
 					this.correctAnswer = answers[0].id;
 				}
-				this.quiz.emit('question.answer', this.correctAnswer);
+				this.quiz.emit('question.correctAnswer', this.correctAnswer);
+				this.quiz.emit('quiz.points', this.quiz.getPoints());
 				break;
 		}
 		console.log('question.state ', oldState + ' --> ' + this.state);

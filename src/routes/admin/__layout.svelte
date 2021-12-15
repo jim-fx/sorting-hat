@@ -11,5 +11,11 @@
 <style>
 	:global(main) {
 		justify-content: flex-start !important;
+		align-items: baseline !important;
+		padding: 10px;
+	}
+
+	:global(.overlay-wrapper) {
+		display: none;
 	}
 </style>

@@ -35,6 +35,7 @@
 	"type": "module",
 	"dependencies": {
 		"@prisma/client": "^3.6.0",
+		"@types/ws": "^8.2.2",
 		"bcrypt": "^5.0.1",
 		"cors": "^2.8.5",
 		"googleapis": "^92.0.0",
@@ -49,6 +50,7 @@
 		"svelte-cubed": "^0.2.1",
 		"svelte-knobby": "^0.3.3",
 		"svelte-range-slider-pips": "^2.0.0",
+		"svelte-sortable-list": "^1.1.0",
 		"three": "^0.135.0",
 		"typeorm": "^0.2.41",
 		"vite-plugin-glsl": "^0.0.5",

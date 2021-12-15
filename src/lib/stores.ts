@@ -2,8 +2,9 @@ import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 import localStorageStore from './localStorageStore';
 import type Quiz from '$lib/quiz';
-import { on } from './client-api';
+import { on, get } from './client-api';
 import type Question from './quiz/Question';
+import { mergeDeep } from './helpers';
 
 export const userData = localStorageStore('user-data', {
 	name: '',
@@ -12,8 +13,22 @@ export const userData = localStorageStore('user-data', {
 	role: 'USER'
 });
 
-type QuizType = ReturnType<typeof Quiz['toJSON']>;
-type QuestionType = ReturnType<Question['toJSON']>;
+export type QuizType = ReturnType<typeof Quiz['toJSON']>;
+export type QuestionType = ReturnType<Question['toJSON']>;
+export type PointType = ReturnType<typeof Quiz['getPoints']>;
+export const pointStore: Writable<PointType> = writable({
+	users: {},
+	house: {
+		ravenclaw: 0,
+		gryffindor: 0,
+		slytherin: 0,
+		hufflepuff: 0
+	}
+});
+
+on('quiz.points', (points: PointType) => {
+	pointStore.set(points);
+});
 
 export const quiz: Writable<QuizType> = writable();
 
@@ -40,17 +55,31 @@ on('question', (v: QuestionType) => {
 	});
 });
 
-on('question.answer', (v: string) => {
+on('question.correctAnswer', (v: QuestionType['correctAnswer']) => {
 	quiz.update((q) => {
 		q.activeQuestion.correctAnswer = v;
 		return q;
 	});
 });
 
-on('quiz.users', (users: { name: string; id: string; house: string }[]) => {
+on('quiz.users', (users: QuizType['users']) => {
 	quiz.update((v) => {
 		v.users = users;
 		return v;
+	});
+});
+
+on('quiz.startsAt', (s: QuizType['startsAt']) => {
+	quiz.update((q) => {
+		q.startsAt = s;
+		return q;
+	});
+});
+
+on('question.answers', (d: QuestionType['answers']) => {
+	quiz.update((q) => {
+		q.activeQuestion.answers = d;
+		return q;
 	});
 });
 
@@ -62,13 +91,8 @@ on('quiz.state', (s: QuizType['state']) => {
 });
 
 on('quiz', (v: QuizType) => {
-	quiz.update((q) => {
-		q.id = v.id;
-		q.state = v.state;
-		q.activeQuestion = v.activeQuestion;
-		q.description = v.description;
-		q.name = v.name;
-		return q;
+	quiz.update((q = {} as QuizType) => {
+		return mergeDeep(q, v);
 	});
 });
 

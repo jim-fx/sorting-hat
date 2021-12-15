@@ -9,18 +9,34 @@ export default class Quiz {
 	description: string;
 	id = nanoid();
 	activeQuestion: Question;
+	startsAt: number;
 
 	state: 'registration' | 'running' | 'results' = 'registration';
 
 	users: { name: string; id: string; house: string }[] = [];
 
-	constructor() {}
+	constructor() {
+		wss.then((ws) => {
+			ws.on('connection', (ws: any) => {
+				ws.send(JSON.stringify({ type: 'quiz', data: this.toJSON() }));
+			});
+		});
+	}
 
 	start() {
 		this.state = 'running';
 		this.questions[0].start();
 		this.emit('quiz', this.toJSON());
 		this.emitAdmin('quiz', this.toJSON(true));
+		this.emit('quiz.points', this.getPoints());
+	}
+
+	startWithTimer(time = 10000) {
+		this.startsAt = Date.now() + time;
+		this.emit('quiz.startsAt', this.startsAt);
+		setTimeout(() => {
+			this.start();
+		}, time);
 	}
 
 	findUserByID(userId: string) {
@@ -28,25 +44,29 @@ export default class Quiz {
 	}
 
 	async emit(eventType: string, data: unknown) {
-		console.log('quiz.emit ' + eventType, data);
+		console.log('quiz.emit ' + eventType);
 		(await wss).emit(eventType, data);
 	}
 
 	async emitAdmin(eventType: string, data: unknown) {
-		console.log('quiz.emitAdmin ' + eventType, data);
+		console.log('quiz.emitAdmin ' + eventType);
 		(await wss).emitAdmin(eventType, data);
 	}
 
 	addAnswer(userId: string, answerId: string) {
+		console.log('quiz.addAnswer', { userId, answerId });
 		return this?.activeQuestion.addAnswer(userId, answerId);
 	}
 
 	addVote(userId: string, answerId: string) {
+		console.log('quiz.addVote', { userId, answerId });
 		return this?.activeQuestion.voteForAnswer(answerId, userId);
 	}
 
 	registerUser(username: string, house: string): string {
+		console.log('quiz.registerUser', { username, house });
 		if (this.state !== 'registration') return;
+
 		const user = {
 			name: username,
 			house,
@@ -57,14 +77,20 @@ export default class Quiz {
 		return user.id;
 	}
 
-	load(dataSet: DataSet) {
+	load(dataSet: DataSet = data.main) {
+		this.id = nanoid();
 		this.questions = dataSet.questions.map((v, i) => new Question(this, v, i));
+		this.state = 'registration';
+		this.startsAt = 0;
+		this.users = [];
 		this.questions.forEach((q, i) => {
 			if (i < this.questions.length) {
 				q.nextQuestion = this.questions[i + 1];
 			}
 		});
 		this.description = dataSet.description;
+		this.emit('quiz', this.toJSON());
+		this.emitAdmin('quiz', this.toJSON(true));
 	}
 
 	getQuestion() {
@@ -114,8 +140,16 @@ export default class Quiz {
 		return houses;
 	}
 
+	getPoints() {
+		return {
+			users: this.getUserPoints(),
+			house: this.getHousePoints()
+		};
+	}
+
 	toJSON(isAdmin = false) {
 		const obj = {
+			startsAt: this.startsAt,
 			id: this.id,
 			amount: this.questions.length,
 			state: this.state,

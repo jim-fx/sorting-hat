@@ -40,8 +40,11 @@ function createSocket(): WebSocket {
 
 	_s.onopen = () => {
 		console.log('Websocket Connected');
+		res();
 		setTimeout(() => {
-			res();
+			if ('open' in events) {
+				events['open'].forEach((cb) => cb(_s));
+			}
 		}, 50);
 		res();
 	};

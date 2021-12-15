@@ -44,20 +44,31 @@ export function get(apiPath: string, token?: string): Promise<Response> {
 	return send(apiPath, { method: 'GET', token });
 }
 
+import { on } from './ws';
 export { emit, on } from './ws';
 
-export function setUserStore(u) {
-	if (browser && 'jwt' in localStorage) {
+let userStore;
+function registerWsAdmin() {
+	if (browser && 'jwt' in localStorage && userStore) {
 		const { jwt } = localStorage;
 		const { role } = decodeJWT(jwt);
 		if (role === 'ADMIN') {
-			u.update((v) => {
+			userStore.update((v) => {
 				v.role = role;
 				return v;
 			});
 			emit('admin', jwt);
 		}
 	}
+}
+
+on('open', () => {
+	registerWsAdmin();
+});
+
+export function setUserStore(u) {
+	userStore = u;
+	registerWsAdmin();
 }
 
 export function post(apiPath: string, body: unknown, token?: string): Promise<Response> {
