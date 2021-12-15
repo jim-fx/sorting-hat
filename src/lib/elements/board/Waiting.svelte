@@ -13,22 +13,35 @@
 		<h1>Quiz startet in {secondsLeft}</h1>
 	</Timer>
 {:else}
-	<h1>Registriert euch</h1>
-	{#each users as u}
-		<div class="user" in:slide>
-			<div class="crest" in:scale={{ delay: 500 }}>
-				<Crest house={u.house} />
+	<h3>Registriert euch für</h3>
+	<h1>{quiz.description}</h1>
+	<div class="users">
+		{#each users as u}
+			<div class="user" in:slide>
+				<div class="crest" in:scale={{ delay: 500 }}>
+					<Crest house={u.house} />
+				</div>
+				<p>{u.name} registered</p>
 			</div>
-			<p>{u.name} registered</p>
-		</div>
-	{/each}
+		{/each}
+	</div>
 {/if}
 
 <style>
+	.users {
+		max-height: 30vh;
+		overflow: hidden;
+	}
+
 	.user {
 		display: flex;
 		margin: 10px 0px;
 		align-items: center;
+	}
+
+	h1,
+	h3 {
+		margin: 2px 0px;
 	}
 
 	p {

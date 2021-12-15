@@ -24,10 +24,6 @@
 	<slot />
 </main>
 
-{#if $quiz?.state === 'registration' && !$page?.path.includes('quiz') && !$page?.path.includes('admin')}
-	<a href="/quiz">Enter Quiz</a>
-{/if}
-
 <style>
 	a {
 		position: fixed;

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+
 	import createActions from '$lib/actions';
 	import { activeAction } from '$lib/actions/ActionClass';
 	import Animator from '$lib/animator';
@@ -8,7 +10,7 @@
 	import Typewriter from '$lib/elements/Typewriter.svelte';
 	import loader from '$lib/loader';
 	import pointer from '$lib/pointerStore';
-	import { finished } from '$lib/stores';
+	import { finished, quiz } from '$lib/stores';
 	import { onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
 	import type { SkinnedMesh } from 'three';
@@ -111,6 +113,10 @@
 <svelte:head>
 	<title>Dungeon Entry</title>
 </svelte:head>
+
+{#if $quiz?.state === 'registration' && !$page?.path.includes('quiz') && !$page?.path.includes('admin')}
+	<a href="/quiz">Enter Quiz</a>
+{/if}
 
 {#if $finished}
 	<Book />

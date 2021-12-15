@@ -27,11 +27,11 @@
 				<td>{answer.value}</td>
 			{/each}
 		</thead>
-		{#each userAnswers as ua}
+		{#each users as u}
 			<tr>
-				<td>{ua.name}</td>
+				<td>{u.name}</td>
 				{#each answers as a}
-					<td>{a.votes.includes(ua.uid) ? 'X' : ' '}</td>
+					<td>{a.votes.includes(u.id) ? 'X' : ' '}</td>
 				{/each}
 			</tr>
 		{/each}
@@ -43,6 +43,8 @@
 <style>
 	.w-wrapper {
 		max-width: 100%;
+		height: fit-content;
+		overflow-y: visible;
 		overflow-x: auto;
 	}
 

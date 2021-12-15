@@ -3,12 +3,15 @@
 	import Crest from '$lib/elements/Crest.svelte';
 	import SortableList from 'svelte-sortable-list';
 	import { HouseColors, HouseName } from '$lib/houses';
-	import Question from '../Question.svelte';
 
 	export let quiz: QuizType;
 	$: question = quiz?.activeQuestion;
-
 	$: answer = question?.answers.find((a) => a?.id === question?.correctAnswer);
+
+	$: answered =
+		question.type === 'multiple'
+			? question.answers.map((a) => a.votes.length).reduce((acc, v) => acc + v, 0)
+			: question.answers.length;
 
 	$: houses = Object.entries($pointStore?.house).map(([name, pts]) => {
 		return {
@@ -42,6 +45,8 @@
 			</h1>
 			{#if answer}
 				<p>{answer.value}</p>
+			{:else}
+				<p>{answered}/{quiz.users.length}</p>
 			{/if}
 		{/if}
 	</div>
