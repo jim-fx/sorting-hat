@@ -148,7 +148,7 @@
 		max-width: 100vh;
 		height: 100vh;
 		max-height: 100vw;
-		opacity: 0.6;
+		opacity: 0.4;
 	}
 
 	a {
