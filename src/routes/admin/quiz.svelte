@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as c from '$lib/client-api';
 	import { Header, UserTable, AnswerTable } from '$lib/elements/admin';
+	import Crest from '$lib/elements/Crest.svelte';
 	import { quiz, quiz as quizStore, userData } from '$lib/stores';
 	import { onMount } from 'svelte';
 

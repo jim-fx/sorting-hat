@@ -6,6 +6,7 @@
 	import Question from '$lib/elements/Question.svelte';
 	import Card from '$lib/elements/Card.svelte';
 	import Timer from '$lib/elements/Timer.svelte';
+	import Crest from '$lib/elements/Crest.svelte';
 
 	let showConfetti;
 
@@ -125,7 +126,24 @@
 	<p>Quiz Already started</p>
 {/if}
 
+<div class="crest">
+	<Crest house={$userData.house} />
+</div>
+
 <style>
+	.crest {
+		position: fixed;
+		z-index: -1;
+		top: 50vh;
+		left: 50vw;
+		transform: translateX(-50%) translateY(-50%);
+		width: 100vw;
+		max-width: 100vh;
+		height: 100vh;
+		max-height: 100vw;
+		opacity: 0.6;
+	}
+
 	a {
 		color: white;
 		background: black;

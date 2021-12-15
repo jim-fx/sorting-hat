@@ -113,13 +113,13 @@
 			transform: rotateY(180deg) translateZ(-100px);
 		}
 		100% {
-			transform: rotateY(180deg) translateZ(0px);
+			transform: rotateY(180deg) translateZ(0px) scale(0.7);
 		}
 	}
 
 	@keyframes unflipCard {
 		0% {
-			transform: rotateY(180deg) translateZ(0px);
+			transform: rotateY(180deg) translateZ(0px) scale(0.7);
 		}
 		100% {
 			transform: rotateY(var(--x)) rotateX(var(--y)) translateZ(0px);
