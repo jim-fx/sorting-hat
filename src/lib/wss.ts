@@ -25,8 +25,6 @@ const wss: Promise<WSServer> = new Promise((res) =>
 						events[type].forEach((cb) => cb(data));
 					}
 
-					console.log('received:', type, data);
-
 					switch (type) {
 						case 'admin':
 							const { role } = await jwt.verify(data, JWT_SECRET);

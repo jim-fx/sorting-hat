@@ -21,7 +21,6 @@ on('question.state', (state: string) => {
 	quiz.update((q) => {
 		console.groupCollapsed('question.state', state);
 		q.activeQuestion.state = state as any;
-		console.log(q);
 		console.groupEnd();
 		return q;
 	});

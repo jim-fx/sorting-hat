@@ -12,6 +12,7 @@ function handleGyro({ alpha, beta }) {
 	if (!oBeta) oBeta = beta;
 	mx = ((oBeta - beta) / 80) * -1;
 	my = ((oAlpha - alpha) / 80) * -2;
+	store.set({ x: mx, y: my });
 }
 
 function handleResize() {

@@ -63,6 +63,10 @@
 
 <svelte:window on:keydown={handleKeyDown} />
 
+<svelte:head>
+	<title>Dungeon Quiz</title>
+</svelte:head>
+
 {#if quizState === 'registration'}
 	<Card flipped={registered} bind:showConfetti>
 		<div slot="front">

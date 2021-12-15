@@ -50,7 +50,6 @@ export function setUserStore(u) {
 	if (browser && 'jwt' in localStorage) {
 		const { jwt } = localStorage;
 		const { role } = decodeJWT(jwt);
-		console.log('Got Role', role, u);
 		if (role === 'ADMIN') {
 			u.update((v) => {
 				v.role = role;

@@ -54,9 +54,7 @@ async function loadFont(name: string, url: string) {
 async function loadBook({
 	name = '',
 	house = ''
-}: { name: string; house: string } = {}): Promise<GLTF> {
-	console.log(name, house);
-
+}: { name?: string; house?: string } = {}): Promise<GLTF> {
 	const canvas = document.createElement('canvas');
 	canvas.width = 512;
 	canvas.height = 512;

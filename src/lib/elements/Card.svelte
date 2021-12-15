@@ -10,7 +10,6 @@
 	let showConfetti3;
 
 	export const showConfetti = () => {
-		console.log('ShowCOnfetti');
 		showConfetti1?.();
 		showConfetti2?.();
 		showConfetti3?.();

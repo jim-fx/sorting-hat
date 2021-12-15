@@ -103,8 +103,6 @@ export default class Quiz {
 			obj['questions'] = this.questions.map((v) => v.toJSON());
 		}
 
-		// console.log('Quiz.toJSON', obj);
-
 		return obj;
 	}
 }

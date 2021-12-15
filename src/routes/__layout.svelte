@@ -8,6 +8,8 @@
 
 	$: console.log($userData);
 
+	const pointer = pointerStore.store;
+
 	onMount(async () => {
 		const res = await c.get('api/quiz');
 		quiz.set(await res.json());
