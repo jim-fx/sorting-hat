@@ -2,7 +2,7 @@
 	import { capitalize } from '$lib/helpers';
 
 	import type { HouseName } from '$lib/houses';
-	export let house: HouseName | string;
+	export let house: HouseName | string = 'gryffindor';
 	export let showName = false;
 </script>
 
