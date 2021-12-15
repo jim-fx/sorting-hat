@@ -3,13 +3,6 @@ import { nanoid } from 'nanoid';
 import wss from '$lib/wss';
 import * as data from './data';
 
-// const houses = {
-// 	ravenclaw: 'ra',
-// 	gryffindor: 'gr',
-// 	slytherin: 'sl',
-// 	hufflepuff: 'hu'
-// };
-
 export default class Quiz {
 	name: 'Quiz' = 'Quiz';
 	questions: Question[];
@@ -28,6 +21,10 @@ export default class Quiz {
 		this.questions[0].start();
 		this.emit('quiz', this.toJSON());
 		this.emitAdmin('quiz', this.toJSON(true));
+	}
+
+	findUserByID(userId: string) {
+		return this.users.find((u) => u.id === userId);
 	}
 
 	async emit(eventType: string, data: unknown) {
@@ -61,13 +58,12 @@ export default class Quiz {
 	}
 
 	load(dataSet: DataSet) {
-		this.questions = dataSet.questions.map((v) => new Question(this, v));
+		this.questions = dataSet.questions.map((v, i) => new Question(this, v, i));
 		this.questions.forEach((q, i) => {
 			if (i < this.questions.length) {
 				q.nextQuestion = this.questions[i + 1];
 			}
 		});
-
 		this.description = dataSet.description;
 	}
 
@@ -88,9 +84,40 @@ export default class Quiz {
 		}
 	}
 
+	getUserPoints() {
+		const users = {};
+
+		for (let i = 0; i <= this?.activeQuestion?.index; i++) {
+			this.questions[i].getUserPoints().map(({ userId, pts }) => {
+				users[userId] = userId in users ? users[userId] + pts : pts;
+			});
+		}
+
+		return users;
+	}
+
+	getHousePoints() {
+		const houses = {
+			hufflepuff: 0,
+			ravenclaw: 0,
+			gryffindor: 0,
+			slytherin: 0
+		};
+
+		for (let i = 0; i <= this?.activeQuestion?.index; i++) {
+			const q = this.questions[i].getHousePoints();
+			houses.gryffindor += q.gryffindor;
+			houses.ravenclaw += q.ravenclaw;
+			houses.slytherin += q.slytherin;
+			houses.hufflepuff += q.hufflepuff;
+		}
+		return houses;
+	}
+
 	toJSON(isAdmin = false) {
 		const obj = {
 			id: this.id,
+			amount: this.questions.length,
 			state: this.state,
 			name: this.name,
 			users: this.users,

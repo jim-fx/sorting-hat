@@ -5,6 +5,7 @@ import type Quiz from './Quiz';
 type QuestionState = 'idle' | 'open' | 'voting-open' | 'closed';
 export default class Question {
 	id: string;
+	index: number;
 	type: 'multiple' | 'voting';
 	description: string;
 	quiz: Quiz;
@@ -13,9 +14,10 @@ export default class Question {
 	answers: Answer[] = [];
 	correctAnswer: string;
 
-	constructor(q: Quiz, d: QuestionData) {
+	constructor(q: Quiz, d: QuestionData, index: number) {
 		this.quiz = q;
 		this.id = nanoid();
+		this.index = index;
 
 		if (d.answers) {
 			this.answers = d.answers.map((v) => {
@@ -119,10 +121,63 @@ export default class Question {
 		}
 	}
 
+	getHousePoints() {
+		const houses = {
+			hufflepuff: 0,
+			ravenclaw: 0,
+			gryffindor: 0,
+			slytherin: 0
+		};
+
+		if (this.type === 'multiple') {
+			this.answers.forEach((a) => {
+				if (a.id === this.correctAnswer) {
+					a.votes.forEach((uId) => {
+						const { house } = this.quiz.findUserByID(uId);
+						if (house in houses) {
+							houses[house]++;
+						}
+					});
+				}
+			});
+		} else if (this.type === 'voting') {
+			this.answers.forEach((a) => {
+				const { house } = this.quiz.findUserByID(a.userId);
+				if (house in houses) {
+					houses[house] += a.votes.size;
+				}
+			});
+		}
+
+		return houses;
+	}
+
+	getUserPoints() {
+		if (this.type === 'multiple') {
+			const correctAnswer = this.answers.find((a) => a.id === this.correctAnswer);
+			return [...correctAnswer.votes.values()].map((u) => {
+				return {
+					userId: u,
+					pts: 1
+				};
+			});
+		} else if (this.type === 'voting') {
+			return this.answers
+				.map((a) => {
+					return {
+						userId: a.userId,
+						pts: a.votes.size
+					};
+				})
+				.filter((v) => v.pts > 0);
+		}
+	}
+
 	toJSON(isAdmin = false) {
 		return {
 			state: this.state,
 			type: this.type,
+			index: this.index,
 			answers: this.answers.map((q) => q.toJSON()),
 			description: this.description,
 			correctAnswer: (this.state === 'closed' || isAdmin) && this.correctAnswer,
