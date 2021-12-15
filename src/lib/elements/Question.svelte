@@ -138,6 +138,11 @@
 	.description {
 		color: white;
 		font-size: 1.2em;
+		text-align: center;
+	}
+
+	.answer {
+		font-size: 0.9em;
 	}
 
 	.answer.selected {
