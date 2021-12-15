@@ -1,14 +1,9 @@
 <script lang="ts">
 	import * as c from '$lib/client-api';
+	import Overlay from '$lib/elements/Overlay.svelte';
+	import pointerStore from '$lib/pointerStore';
 	import { quiz, userData } from '$lib/stores';
 	import { onMount } from 'svelte';
-	import Overlay from '$lib/elements/Overlay.svelte';
-	import { page } from '$app/stores';
-	import pointerStore from '$lib/pointerStore';
-
-	$: console.log($userData);
-
-	const pointer = pointerStore.store;
 
 	onMount(async () => {
 		const res = await c.get('api/quiz');
@@ -25,16 +20,6 @@
 </main>
 
 <style>
-	a {
-		position: fixed;
-		bottom: 20px;
-		right: 20px;
-		background-color: black;
-		color: white;
-		padding: 5px;
-		text-decoration: none;
-	}
-
 	main {
 		height: 100%;
 		width: 100%;

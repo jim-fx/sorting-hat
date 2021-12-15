@@ -27,7 +27,6 @@
 	};
 
 	function initParticles() {
-		console.log('INit Particles');
 		for (let i = 0; i < particles.length - stride; i += stride) {
 			const x = width / 2;
 			const y = height - 10;

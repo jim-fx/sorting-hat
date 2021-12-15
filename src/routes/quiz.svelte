@@ -78,16 +78,22 @@
 			{#if !$userData.name || !$userData.house}
 				<a href="/">Need to input your name</a>
 			{:else}
-				<button on:click={register}>Join the quiz</button>
+				<h2>{$quiz.description}</h2>
+				<button on:click={register}>Beitreten</button>
+			{/if}
+		</div>
+
+		<div slot="back">
+			{#if $quiz.startsAt}
+				<Timer endsAt={$quiz.startsAt} let:secondsLeft>
+					<button>{secondsLeft}</button>
+				</Timer>
 			{/if}
 		</div>
 
 		<div slot="info" id="registration-success">
-			{#if registered}
+			{#if registered && !$quiz.startsAt}
 				<p>Warte bis das Quiz beginnt</p>
-				{#if $quiz.startsAt}
-					<Timer endsAt={$quiz.startsAt} />
-				{/if}
 			{/if}
 		</div>
 	</Card>
