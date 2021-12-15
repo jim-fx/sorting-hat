@@ -134,6 +134,8 @@
 		height: calc(100% - 20px);
 		background-size: 100% 100%;
 
+		overflow-y: auto;
+
 		position: absolute;
 		backface-visibility: hidden;
 	}
