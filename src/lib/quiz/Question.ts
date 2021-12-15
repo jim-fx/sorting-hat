@@ -130,6 +130,8 @@ export default class Question {
 			slytherin: 0
 		};
 
+		if (this.state !== 'closed') return houses;
+
 		if (this.type === 'multiple') {
 			this.answers.forEach((a) => {
 				if (a.id === this.correctAnswer) {
@@ -154,6 +156,8 @@ export default class Question {
 	}
 
 	getUserPoints() {
+		if (this.state !== 'closed') return [];
+
 		if (this.type === 'multiple') {
 			const correctAnswer = this.answers.find((a) => a.id === this.correctAnswer);
 			return [...correctAnswer.votes.values()].map((u) => {
