@@ -4,6 +4,9 @@
 	import type { HouseName } from '$lib/houses';
 	export let house: HouseName | string = 'gryffindor';
 	export let showName = false;
+	if (!house.length) {
+		house = 'empty';
+	}
 </script>
 
 <div>
