@@ -7,6 +7,7 @@
 	import Card from '$lib/elements/Card.svelte';
 	import Timer from '$lib/elements/Timer.svelte';
 	import Crest from '$lib/elements/Crest.svelte';
+	import { fade } from 'svelte/transition';
 
 	let showConfetti;
 
@@ -126,7 +127,7 @@
 	<p>Quiz Already started</p>
 {/if}
 
-<div class="crest">
+<div class="crest" transition:fade={{ duration: 5000 }}>
 	<Crest house={$userData.house} />
 </div>
 
