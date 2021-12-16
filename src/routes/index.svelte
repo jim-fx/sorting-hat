@@ -173,7 +173,8 @@
 <style>
 	#enter-quiz {
 		position: fixed;
-		top: 20px;
+	  z-index: 999;
+    top: 20px;
 		left: 20px;
 		color: white;
 		background-color: black;

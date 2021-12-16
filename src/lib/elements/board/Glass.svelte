@@ -50,7 +50,7 @@
 	}
 
 	$: color = HouseColors[house.name];
-	$: y = 300 - value * 240;
+	$: y = 300 - value * 230;
 
 	$: path = `M 0 270 
 	V ${y + 5} 
