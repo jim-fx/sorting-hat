@@ -10,53 +10,38 @@
 	$: question = quiz?.activeQuestion;
 	$: quizState = quiz?.state;
 	$: questionState = question?.state;
+
+	function send(type, data?: unknown) {
+		dispatch('action', { type, data });
+	}
 </script>
 
 <header>
 	<h1>{quizState}{questionState ? '.' + questionState : ''}</h1>
 	<div class="scroller">
 		{#if quizState === 'registration'}
+			<button on:click={() => send('start-quiz')}>Start Quiz</button>
 			{#if quiz.startsAt}
 				<Timer endsAt={quiz.startsAt} />
-			{:else}
-				<button
-					on:click={() => {
-						dispatch('action', 'start-quiz');
-					}}>Start Quiz</button
-				>
-
-				<button
-					on:click={() => {
-						dispatch('action', 'start-quiz-timer');
-					}}>Start Quiz Timer</button
+			{:else if !quiz.startsAt}
+				<button on:click={() => send('start-quiz-timer', { time: 10 * 1000 })}>Start in 10s</button>
+				<button on:click={() => send('start-quiz-timer', { time: 60 * 1000 })}>Start in 1m</button>
+				<button on:click={() => send('start-quiz-timer', { time: 60 * 1000 * 5 })}
+					>Start in 5m</button
 				>
 			{/if}
 		{:else if quizState === 'running'}
 			{#if questionState === 'open'}
-				<button
-					on:click={() => {
-						dispatch('action', 'close-question');
-					}}>{question?.type === 'voting' ? 'Start Voting' : 'End Question'}</button
+				<button on:click={() => send('close-question')}
+					>{question?.type === 'voting' ? 'Start Voting' : 'End Question'}</button
 				>
 			{:else if questionState === 'voting-open'}
-				<button
-					on:click={() => {
-						dispatch('action', 'close-voting');
-					}}>Close Voting</button
-				>
+				<button on:click={() => send('close-voting')}>Close Voting</button>
 			{:else if questionState === 'closed'}
-				<button
-					on:click={() => {
-						dispatch('action', 'end-question');
-					}}>Next Question</button
-				>
+				<button on:click={() => send('end-question')}>Next Question</button>
 			{/if}
 
-			<button
-				on:click={() => {
-					confirm('End Quiz?') && dispatch('action', 'end-quiz');
-				}}>End Quiz</button
-			>
+			<button on:click={() => confirm('End Quiz?') && send('end-quiz')}>End Quiz</button>
 		{/if}
 	</div>
 </header>

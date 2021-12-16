@@ -31,7 +31,7 @@
 
 <svelte:window on:keydown={handleKeyDown} />
 
-<Header quiz={$quiz} on:action={({ detail: action }) => handleAction(action)} />
+<Header quiz={$quiz} on:action={({ detail: { type, data } }) => handleAction(type, data)} />
 
 {#if quizState === 'registration'}
 	{#each $quiz.types as type}

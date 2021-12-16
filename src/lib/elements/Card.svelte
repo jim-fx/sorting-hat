@@ -72,8 +72,8 @@
 		perspective: 500px;
 		width: 300px;
 		height: 500px;
-		max-height: 80vh;
-		max-width: 80vw;
+		max-height: 90vh;
+		max-width: 90vw;
 		transition: perspective 2s, filter 2s ease;
 		filter: drop-shadow(9px 18px 48px rgba(0, 0, 0, 2));
 	}
