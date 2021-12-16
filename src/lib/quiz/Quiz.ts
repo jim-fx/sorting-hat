@@ -3,6 +3,13 @@ import { nanoid } from 'nanoid';
 import wss from '$lib/wss';
 import * as data from './data';
 
+const houses = {
+	hufflepuff: 0,
+	ravenclaw: 0,
+	gryffindor: 0,
+	slytherin: 0
+};
+
 export default class Quiz {
 	name: 'Quiz' = 'Quiz';
 	questions: Question[];
@@ -122,22 +129,44 @@ export default class Quiz {
 		return users;
 	}
 
+	getHouses() {
+		return this.users.reduce(
+			(acc, v) => {
+				acc[v.house]++;
+				return acc;
+			},
+			{ ...houses }
+		);
+	}
 	getHousePoints() {
-		const houses = {
-			hufflepuff: 0,
-			ravenclaw: 0,
-			gryffindor: 0,
-			slytherin: 0
-		};
+		const h = { ...houses };
 
 		for (let i = 0; i <= this?.activeQuestion?.index; i++) {
 			const q = this.questions[i].getHousePoints();
-			houses.gryffindor += q.gryffindor;
-			houses.ravenclaw += q.ravenclaw;
-			houses.slytherin += q.slytherin;
-			houses.hufflepuff += q.hufflepuff;
+			h.gryffindor += q.gryffindor;
+			h.ravenclaw += q.ravenclaw;
+			h.slytherin += q.slytherin;
+			h.hufflepuff += q.hufflepuff;
 		}
-		return houses;
+
+		// Adjust points for team size
+		const houseUsers = this.getHouses();
+		const houseUserArray = Object.entries(houseUsers)
+			.map(([name, amount]) => {
+				return {
+					name,
+					amount
+				};
+			})
+			.sort((a, b) => (a.amount > b.amount ? -1 : 1));
+		const [{ amount: maxAmount }] = houseUserArray;
+
+		Object.keys(h).forEach((houseName) => {
+			const factor = maxAmount / houseUsers[houseName];
+			h[houseName] *= factor;
+		});
+
+		return h;
 	}
 
 	getPoints() {
