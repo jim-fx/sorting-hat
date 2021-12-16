@@ -9,6 +9,8 @@
 
 	export let question: ReturnType<Question['toJSON']>;
 
+	export let userData;
+
 	$: users = $quiz.users;
 
 	export const questionStore = localStorageStore('active-question', {
@@ -71,13 +73,15 @@
 	<p>Vote for the best answer</p>
 	<div class="vote-wrapper">
 		{#each question.answers as a}
-			<button
-				class="vote-button"
-				class:selected={$questionStore.vote === a.id}
-				on:click={() => handleVote(a.id)}>{$questionStore.vote !== a.id ? '☐' : '☒'}</button
-			>
-			<!-- <p class="vote-amount">{a.votes.length}</p> -->
-			<p class="vote-value">{a.value}</p>
+			{#if a.userId !== userData.id}
+				<button
+					class="vote-button"
+					class:selected={$questionStore.vote === a.id}
+					on:click={() => handleVote(a.id)}>{$questionStore.vote !== a.id ? '☐' : '☒'}</button
+				>
+				<!-- <p class="vote-amount">{a.votes.length}</p> -->
+				<p class="vote-value">{a.value}</p>
+			{/if}
 		{/each}
 	</div>
 {:else if question.state === 'closed'}

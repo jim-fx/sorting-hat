@@ -52,7 +52,7 @@
 	<div class="house-wrapper">
 		{#each houses.sort((a, b) => (a.name > b.name ? -1 : 1)) as h}
 			<div class="glass-wrapper">
-				<Glass house={h} maxPoints={sortedHouses[0].pts} />
+				<Glass house={h} maxPoints={Math.max(5, sortedHouses[0].pts)} />
 			</div>
 		{/each}
 	</div>
@@ -117,6 +117,7 @@
 
 	.answer {
 		margin: 10px 0px;
+		margin-left: -10px;
 		padding: 10px;
 		width: fit-content;
 		border-radius: 5px;

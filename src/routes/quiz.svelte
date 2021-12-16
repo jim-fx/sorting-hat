@@ -113,6 +113,7 @@
 		<div slot="front">
 			<Question
 				bind:textValue
+				userData={$quizUserData}
 				bind:questionStore
 				on:vote={handleVote}
 				on:answer={handleAnswer}

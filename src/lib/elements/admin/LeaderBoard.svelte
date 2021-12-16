@@ -10,7 +10,7 @@
 	<SortableList list={users} key="name" let:item>
 		<div class="user" style={`--color: ${HouseColors[item.house]}`}>
 			<h2>
-				{item.pts} Punkt{item.pts > 0 ? 's' : ''} | &nbsp;{item.name}
+				{item.pts} Punkt{item.pts > 1 ? 'e' : ''} | &nbsp;{item.name}
 			</h2>
 		</div>
 	</SortableList>

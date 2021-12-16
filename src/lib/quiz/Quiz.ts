@@ -15,6 +15,7 @@ export default class Quiz {
 	questions: Question[];
 	description: string;
 	id = nanoid();
+	type: string = 'main';
 	activeQuestion: Question;
 	startsAt: number;
 
@@ -84,12 +85,17 @@ export default class Quiz {
 		return user.id;
 	}
 
-	load(dataSet: DataSet = data.main) {
-		this.id = nanoid();
+	load(dataSetId: string = this.type) {
+		console.log('quiz.load', dataSetId);
+
+		if (!(dataSetId in data)) return;
+
+		this.type = dataSetId;
+		const dataSet = data[dataSetId] as DataSet;
+
 		this.questions = dataSet.questions.map((v, i) => new Question(this, v, i));
 		this.state = 'registration';
 		this.startsAt = 0;
-		this.users = [];
 		this.questions.forEach((q, i) => {
 			if (i < this.questions.length) {
 				q.nextQuestion = this.questions[i + 1];
@@ -98,6 +104,12 @@ export default class Quiz {
 		this.description = dataSet.description;
 		this.emit('quiz', this.toJSON());
 		this.emitAdmin('quiz', this.toJSON(true));
+	}
+
+	reset() {
+		this.users = [];
+		this.id = nanoid();
+		this.load();
 	}
 
 	getQuestion() {
@@ -183,6 +195,8 @@ export default class Quiz {
 			amount: this.questions.length,
 			state: this.state,
 			name: this.name,
+			type: this.type,
+			types: Object.keys(data),
 			users: this.users,
 			description: this.description,
 			activeQuestion: this?.activeQuestion?.toJSON()

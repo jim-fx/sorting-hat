@@ -2,7 +2,7 @@
 	import * as c from '$lib/client-api';
 	import { Header, UserTable, AnswerTable } from '$lib/elements/admin';
 	import Crest from '$lib/elements/Crest.svelte';
-	import { quiz, quiz as quizStore, userData } from '$lib/stores';
+	import { quiz, userData } from '$lib/stores';
 	import { onMount } from 'svelte';
 
 	$: quizState = $quiz?.state;
@@ -20,8 +20,8 @@
 		}
 	}
 
-	function handleAction(action: string) {
-		c.post('api/quiz', { action });
+	function handleAction(action: string, body?: Record<string, unknown>) {
+		c.post('api/quiz', { action, ...body });
 	}
 
 	onMount(() => {
@@ -31,9 +31,13 @@
 
 <svelte:window on:keydown={handleKeyDown} />
 
-<Header quiz={$quizStore} on:action={({ detail: action }) => handleAction(action)} />
+<Header quiz={$quiz} on:action={({ detail: action }) => handleAction(action)} />
 
 {#if quizState === 'registration'}
+	{#each $quiz.types as type}
+		<button on:click={() => handleAction('load-type', { type })}>Load {type}</button>
+	{/each}
+
 	<UserTable {users} />
 {:else if quizState === 'running'}
 	<p>{activeQuestion?.description}</p>

@@ -3,6 +3,6 @@ import Quiz from './Quiz';
 
 const q = new Quiz();
 
-q.load(data.main);
+q.load();
 
 export default q;

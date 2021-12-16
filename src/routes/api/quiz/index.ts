@@ -12,12 +12,15 @@ export async function post({ body, locals }) {
 	const { action } = body;
 
 	switch (action) {
+		case 'load-type':
+			quiz.load(body.type);
+			break;
 		case 'start-quiz-timer':
 			const { time } = body;
 			quiz.startWithTimer(time);
 			break;
 		case 'end-quiz':
-			quiz.load();
+			quiz.reset();
 			break;
 		case 'start-quiz':
 			quiz.start();
