@@ -79,7 +79,11 @@
 
 	.scroller > button {
 		margin: 0px;
+		min-width: max-content;
 		margin-right: 10px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	header > h1 {

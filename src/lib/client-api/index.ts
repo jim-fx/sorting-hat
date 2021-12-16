@@ -5,6 +5,9 @@ import { decodeJWT } from '$lib/helpers';
 import { emit } from './ws';
 
 const { VITE_API_URL = '' } = import.meta.env as unknown as { VITE_API_URL: string };
+let userStore;
+
+let tokenStale = false;
 
 async function send(
 	_url: string,
@@ -37,7 +40,19 @@ async function send(
 	console.log({ body, token, headers: options['headers'] });
 	console.groupEnd();
 
-	return fetch(url, options);
+	const response = await fetch(url, options);
+
+	console.log(response, userStore);
+
+	if (response.status === 401 && userStore) {
+		tokenStale = true;
+		userStore.update((u) => {
+			u.role = '';
+			return u;
+		});
+	}
+
+	return response;
 }
 
 export function get(apiPath: string, token?: string): Promise<Response> {
@@ -47,11 +62,12 @@ export function get(apiPath: string, token?: string): Promise<Response> {
 import { on } from './ws';
 export { emit, on } from './ws';
 
-let userStore;
 function registerWsAdmin() {
 	if (browser && 'jwt' in localStorage && userStore) {
+		if (tokenStale) return;
 		const { jwt } = localStorage;
 		const { role } = decodeJWT(jwt);
+		console.log('registerWsAdmin');
 		if (role === 'ADMIN') {
 			userStore.update((v) => {
 				v.role = role;

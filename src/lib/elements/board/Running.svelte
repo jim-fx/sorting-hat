@@ -1,13 +1,13 @@
 <script lang="ts">
+	import type { HouseName } from '$lib/houses';
 	import { pointStore, QuizType } from '$lib/stores';
-	import Crest from '$lib/elements/Crest.svelte';
-	import SortableList from 'svelte-sortable-list';
-	import { HouseColors, HouseName } from '$lib/houses';
+	import LeaderBoard from '../admin/LeaderBoard.svelte';
+	import Glass from './Glass.svelte';
 
 	export let quiz: QuizType;
 	$: question = quiz?.activeQuestion;
-	$: answer = question?.answers.find((a) => a?.id === question?.correctAnswer);
-
+	$: answers = question?.answers;
+	$: answer = answers?.find((a) => a?.id === question?.correctAnswer);
 	$: answered =
 		question.type === 'multiple'
 			? question.answers.map((a) => a.votes.length).reduce((acc, v) => acc + v, 0)
@@ -20,22 +20,41 @@
 		};
 	});
 
+	function findUser(userId: string) {
+		return quiz.users.find((user) => user.id === userId);
+	}
+
 	$: sortedHouses = houses.sort((a, b) => (a.pts > b.pts ? -1 : 1));
+	$: sortedUsers = Object.entries($pointStore.users)
+		.map(([userId, pts]) => {
+			console.log(userId, pts);
+			return {
+				...findUser(userId),
+				pts
+			};
+		})
+		.sort((a, b) => (a.pts > b.pts ? -1 : 1));
+
+	$: console.log(sortedUsers);
+
+	// setInterval(() => {
+	// 	pointStore.update((p) => {
+	// 		p.house['gryffindor'] = Math.round(Math.random() * 20);
+	// 		p.house['ravenclaw'] = Math.round(Math.random() * 20);
+	// 		p.house['slytherin'] = Math.round(Math.random() * 20);
+	// 		p.house['hufflepuff'] = Math.round(Math.random() * 20);
+	// 		return p;
+	// 	});
+	// }, 5000);
 </script>
 
 <div class="container">
 	<div class="house-wrapper">
-		<SortableList list={sortedHouses} key="name" let:item>
-			<div class="house" style={`--color: ${HouseColors[item.name]}`}>
-				<div class="crest">
-					<Crest house={item.name} showName />
-				</div>
-
-				<h2>
-					{item.pts} Punkte
-				</h2>
+		{#each houses.sort((a, b) => (a.name > b.name ? -1 : 1)) as h}
+			<div class="glass-wrapper">
+				<Glass house={h} maxPoints={sortedHouses[0].pts} />
 			</div>
-		</SortableList>
+		{/each}
 	</div>
 
 	<div class="current-question">
@@ -43,13 +62,17 @@
 			<h1>
 				{question?.description}
 			</h1>
-			{#if answer}
-				<p>{answer.value}</p>
-			{:else}
+
+			{#if !answer}
 				<p>{answered}/{quiz.users.length}</p>
 			{/if}
+			{#each answers as a}
+				<p class="answer" class:right={answer && answer.id === a.id}>{a.value}</p>
+			{/each}
 		{/if}
 	</div>
+
+	<LeaderBoard users={sortedUsers} />
 </div>
 
 <style>
@@ -59,66 +82,49 @@
 		width: calc(100vw - 50px);
 		height: calc(100vh - 50px);
 		box-sizing: border-box;
-		grid-template-columns: minmax(460px, auto) 1.1fr;
-		grid-template-rows: 1.2fr 0.8fr;
+		grid-template-columns: 2fr 1fr;
+		grid-template-rows: 1fr 40vh;
 		gap: 0px 0px;
 		grid-template-areas:
 			'left question'
 			'left info';
 	}
 
-	.container :global(li) {
-		height: 25%;
-		padding: 0px 19px;
-		box-sizing: border-box;
-		border: none !important;
-	}
-
-	.container :global(ul) {
-		height: 100%;
-	}
-
-	.house {
-		position: relative;
-		height: 100%;
-		box-sizing: border-box;
-		display: grid;
-		grid-template-columns: 20vh 1.1fr;
-		place-items: center;
-	}
-
-	.house > * {
-		z-index: 1;
-	}
-
-	.house::before {
-		content: '';
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		opacity: 0.5;
-		background-color: var(--color);
-		background-blend-mode: multiply;
-		z-index: 0;
-	}
-
-	.house > .crest {
-		filter: drop-shadow(10px 10px 5px rgba(0, 0, 0, 1));
-	}
-
 	.house-wrapper {
+		display: flex;
 		grid-area: left;
-		background: url('/card-front.png');
+		place-self: center;
+		justify-self: center;
+		/* background: url('/card-front.png'); */
+		max-width: 75vh;
 		background-size: 100% 100%;
 		padding: 20px 0px;
 		box-sizing: border-box;
-		height: 100%;
+		height: fit-content;
+	}
+
+	.glass-wrapper {
+		width: 23%;
+		display: inline-block;
+		filter: drop-shadow(7px 7px 18px black);
 	}
 
 	.current-question {
 		place-self: baseline;
 		width: 80%;
-		margin-left: 10%;
 		grid-area: question;
+	}
+
+	.answer {
+		margin: 10px 0px;
+		padding: 10px;
+		width: fit-content;
+		border-radius: 5px;
+		transition: background-color 0.3s ease;
+		background-color: transparent;
+	}
+
+	.answer.right {
+		background-color: green;
 	}
 </style>

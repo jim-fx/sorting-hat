@@ -58,6 +58,10 @@ export default class Question {
 		let a: Answer;
 
 		if (this.type === 'multiple') {
+			this.answers.forEach((a) => {
+				a.votes.delete(userId);
+			});
+
 			a = this.findAnswerById(value);
 			a.addVote(userId);
 		} else {

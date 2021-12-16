@@ -3,6 +3,8 @@ import type { Handle } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
 
 export const handle: Handle = async ({ request, resolve }) => {
+	let wrongJWT = false;
+
 	if ('authentication' in request.headers) {
 		const jwt_raw = request.headers.authentication.replace('Bearer ', '');
 		try {
@@ -10,11 +12,16 @@ export const handle: Handle = async ({ request, resolve }) => {
 			request.locals.user = decoded;
 			request.locals.isAdmin = decoded?.user?.role !== 'ADMIN';
 		} catch (err) {
-			console.log('Wrong JWT');
+			wrongJWT = true;
 		}
 	}
 
 	const response = await resolve(request);
+
+	if (wrongJWT && !request.path.includes('auth')) {
+		response.status = 401;
+		console.log('stale jwt');
+	}
 
 	return {
 		...response,

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { compare } from 'bcrypt';
-import prisma from '$lib/db';
 import { JWT_SECRET } from '$lib/config';
+import prisma from '$lib/db';
 
 export async function post({ body }) {
 	const { username, password } = body;
@@ -27,6 +27,8 @@ export async function post({ body }) {
 	const token = jwt.sign({ user_id: user.uid, name: user.name, role: user.role }, JWT_SECRET, {
 		expiresIn: '2h'
 	});
+
+	console.log(`LoggedIn: ${username}`);
 
 	return {
 		status: 200,

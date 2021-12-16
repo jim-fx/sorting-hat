@@ -114,8 +114,8 @@
 	<title>Dungeon Entry</title>
 </svelte:head>
 
-{#if $quiz?.state === 'registration' && !$page?.path.includes('quiz') && !$page?.path.includes('admin')}
-	<a href="/quiz">Enter Quiz</a>
+{#if $quiz?.state === 'registration'}
+	<a id="enter-quiz" href="/quiz">Enter Quiz</a>
 {/if}
 
 {#if $finished}
@@ -171,6 +171,18 @@
 {/if}
 
 <style>
+	#enter-quiz {
+		position: fixed;
+		top: 20px;
+		left: 20px;
+		color: white;
+		background-color: black;
+		padding: 20px;
+		border-radius: 10px;
+		box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.493);
+		text-decoration: none;
+	}
+
 	.content {
 		width: 90%;
 		max-width: 700px;

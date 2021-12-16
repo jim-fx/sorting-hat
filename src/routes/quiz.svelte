@@ -34,6 +34,7 @@
 
 	let isRegistering = false;
 	async function register() {
+		if (isRegistering || registered) return;
 		isRegistering = true;
 		const res = await c.post('api/quiz/register', { name: $userData.name, house: $userData.house });
 		const json = await res.json();
@@ -82,14 +83,16 @@
 				<a href="/">Need to input your name</a>
 			{:else}
 				<h2>{$quiz.description}</h2>
-				<button on:click={register} disabled={!isRegistering}>Beitreten</button>
+				{#if !isRegistering && !registered}
+					<button on:click={register}>Beitreten</button>
+				{/if}
 			{/if}
 		</div>
 
 		<div slot="back">
 			{#if $quiz.startsAt}
 				<Timer endsAt={$quiz.startsAt} let:secondsLeft>
-					<button>{secondsLeft}</button>
+					<h1>{secondsLeft}</h1>
 				</Timer>
 			{/if}
 		</div>
@@ -161,6 +164,11 @@
 
 	:global(main) {
 		overflow: hidden;
+	}
+
+	div[slot='back'] {
+		display: grid;
+		place-items: center;
 	}
 
 	div[slot='front'] {

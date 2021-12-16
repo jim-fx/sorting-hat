@@ -44,11 +44,14 @@ button:disabled {
 	opacity: 0.6;
 }
 
-input[type='text'] {
+input[type='text'],
+input[type='password'] {
 	font-size: 1.2em;
 	background: gray;
 	padding: 5px;
 	color: white;
+	border-style: none;
+	margin-bottom: 5px;
 }
 
 #range-slider {
