@@ -52,7 +52,7 @@
 	}
 </script>
 
-<p class="description">{question.description}</p>
+<p class="description">({question.index + 1}/{$quiz.amount}) {question.description}</p>
 
 {#if question.type === 'multiple'}
 	{#each question.answers as answer}
@@ -70,7 +70,6 @@
 		>abschicken</button
 	>
 {:else if question.state === 'voting-open'}
-	<p>Vote for the best answer</p>
 	<div class="vote-wrapper">
 		{#each question.answers as a}
 			{#if a.userId !== userData.id}

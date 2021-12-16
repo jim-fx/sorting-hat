@@ -40,6 +40,8 @@
 
 	<UserTable {users} />
 {:else if quizState === 'running'}
+	<p>{activeQuestion?.index + 1}/{$quiz.amount}</p>
+
 	<p>{activeQuestion?.description}</p>
 
 	{#if activeQuestion?.answers}

@@ -7,35 +7,38 @@ const data: DataSet = {
 			correct: 2
 		},
 		{
+			description: 'Was ist der beste Zauberspruch?'
+		},
+		{
 			description: 'Wie lautet die Adresse der Dursleys',
 			answers: ['Magnolienalle 4', 'Ligusterweg 12', 'Magnolienalle 12', 'Ligusterweg 4'],
 			correct: 3
 		},
-		{
-			description: 'Welche Position gibt es nicht beim Quidditch?',
-			answers: ['Sucher*in', 'Stürmer*in', 'Torhüter*in', 'Jäger*in'],
-			correct: 1
-		},
-		{
-			description: 'Welcher Regisseur hat Harry Potter und der Gefangene von Askaban gedreht?',
-			answers: ['David Yates', 'Alfonso Cuarón', 'Chris Columbus', 'Mike Newell'],
-			correct: 1
-		},
+		// {
+		// 	description: 'Welche Position gibt es nicht beim Quidditch?',
+		// 	answers: ['Sucher*in', 'Stürmer*in', 'Torhüter*in', 'Jäger*in'],
+		// 	correct: 1
+		// },
+		// {
+		// 	description: 'Welcher Regisseur hat Harry Potter und der Gefangene von Askaban gedreht?',
+		// 	answers: ['David Yates', 'Alfonso Cuarón', 'Chris Columbus', 'Mike Newell'],
+		// 	correct: 1
+		// },
 		{
 			description: 'Welche Augenfarbe hat Lily Potter?',
 			answers: ['Blau', 'Grau', 'Grün', 'Braun '],
 			correct: 2
 		},
-		{
-			description: 'Wer ist Peeves in den Harry Potter Büchern?',
-			answers: [
-				'Nerviger Hufflepuff-Junge',
-				'Hauself der Familie Tonks',
-				'Poltergeist in Hogwarts',
-				'Kröte von Neville '
-			],
-			correct: 2
-		},
+		// {
+		// 	description: 'Wer ist Peeves in den Harry Potter Büchern?',
+		// 	answers: [
+		// 		'Nerviger Hufflepuff-Junge',
+		// 		'Hauself der Familie Tonks',
+		// 		'Poltergeist in Hogwarts',
+		// 		'Kröte von Neville '
+		// 	],
+		// 	correct: 2
+		// },
 		{
 			description: 'Wie zerbricht der Zauberstab von Harry Potter?',
 			answers: [
@@ -78,11 +81,11 @@ const data: DataSet = {
 			],
 			correct: 1
 		},
-		{
-			description: 'Wer versucht Harry Potter einen Liebestrank zu verabreichen?',
-			answers: ['Hannah Abbot', 'Cho Chang', 'Parvati Patil', 'Romilda Vane '],
-			correct: 3
-		},
+		// {
+		// 	description: 'Wer versucht Harry Potter einen Liebestrank zu verabreichen?',
+		// 	answers: ['Hannah Abbot', 'Cho Chang', 'Parvati Patil', 'Romilda Vane '],
+		// 	correct: 3
+		// },
 		{
 			description: 'Welcher Gegenstand ist kein Horcrux von Lord Voldemort?',
 			answers: [
@@ -93,11 +96,11 @@ const data: DataSet = {
 			],
 			correct: 0
 		},
-		{
-			description: 'In welches Wesen verwandelt sich der Irrwicht von Ron?',
-			answers: ['Spinne', 'Schlange', 'Basilisk', 'Ratte '],
-			correct: 0
-		},
+		// {
+		// 	description: 'In welches Wesen verwandelt sich der Irrwicht von Ron?',
+		// 	answers: ['Spinne', 'Schlange', 'Basilisk', 'Ratte '],
+		// 	correct: 0
+		// },
 		{
 			description: 'Welchen Beruf führen Hermines Eltern in der Mugglewelt aus?',
 			answers: [
@@ -108,31 +111,31 @@ const data: DataSet = {
 			],
 			correct: 1
 		},
-		{
-			description: 'Welcher der folgenden Charaktere ist kein Animagus?',
-			answers: ['James Potter', 'Minerva McGonagall', 'Rita Kimmkorn', 'Remus Lupin '],
-			correct: 3
-		},
-		{
-			description: 'Welcher magische Gegenstand hilft Harry den Stein der Weisen zu erlangen?',
-			answers: [
-				'Karte des Rumtreibers',
-				'Sprechender Hut',
-				'Godric Gryffindors Schwert',
-				'Spiegel Nerhegeb'
-			],
-			correct: 3
-		},
-		{
-			description: 'Aus welchem Grund kann das Schwert von Godric Gryffindor Horcruxe zerstören?',
-			answers: [
-				'Es wurde in Basilisken-Gift getränkt',
-				'Es wurde von Kobolden angefertigt',
-				'Gryffindor selber hat es einem starken Zauber unterzogen',
-				'Es wurde aus unzerstörbarem Silber hergestellt '
-			],
-			correct: 0
-		},
+		// {
+		// 	description: 'Welcher der folgenden Charaktere ist kein Animagus?',
+		// 	answers: ['James Potter', 'Minerva McGonagall', 'Rita Kimmkorn', 'Remus Lupin '],
+		// 	correct: 3
+		// },
+		// {
+		// 	description: 'Welcher magische Gegenstand hilft Harry den Stein der Weisen zu erlangen?',
+		// 	answers: [
+		// 		'Karte des Rumtreibers',
+		// 		'Sprechender Hut',
+		// 		'Godric Gryffindors Schwert',
+		// 		'Spiegel Nerhegeb'
+		// 	],
+		// 	correct: 3
+		// },
+		// {
+		// 	description: 'Aus welchem Grund kann das Schwert von Godric Gryffindor Horcruxe zerstören?',
+		// 	answers: [
+		// 		'Es wurde in Basilisken-Gift getränkt',
+		// 		'Es wurde von Kobolden angefertigt',
+		// 		'Gryffindor selber hat es einem starken Zauber unterzogen',
+		// 		'Es wurde aus unzerstörbarem Silber hergestellt '
+		// 	],
+		// 	correct: 0
+		// },
 		{
 			description: 'Wer tötet die Schlange Nagini?',
 			answers: ['Harry Potter', 'Neville Longbottom', 'Ginny Weasley', 'Albus Dumbledore '],
