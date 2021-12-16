@@ -32,13 +32,16 @@
 		}, 1000);
 	}
 
+	let isRegistering = false;
 	async function register() {
+		isRegistering = true;
 		const res = await c.post('api/quiz/register', { name: $userData.name, house: $userData.house });
 		const json = await res.json();
 		const decoded = decodeJWT(json.token);
 		$quizUserData.token = json.token;
 		$quizUserData.id = decoded.id;
 		$quizUserData.qid = decoded.qid;
+		isRegistering = false;
 	}
 
 	async function handleAnswer({ detail }: { detail: string }) {
@@ -79,7 +82,7 @@
 				<a href="/">Need to input your name</a>
 			{:else}
 				<h2>{$quiz.description}</h2>
-				<button on:click={register}>Beitreten</button>
+				<button on:click={register} disabled={!isRegistering}>Beitreten</button>
 			{/if}
 		</div>
 
