@@ -28,7 +28,7 @@ export default class Question {
 			this.type = 'voting';
 		}
 
-		if (d.correct) {
+		if ("correct" in d) {
 			this.correctAnswer = this.answers[d.correct].id;
 		}
 
@@ -164,7 +164,7 @@ export default class Question {
 
 		if (this.type === 'multiple') {
 			const correctAnswer = this.answers.find((a) => a.id === this.correctAnswer);
-			return [...correctAnswer.votes.values()].map((u) => {
+			return [...correctAnswer?.votes?.values()].map((u) => {
 				return {
 					userId: u,
 					pts: 1
