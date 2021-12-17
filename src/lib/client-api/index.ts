@@ -67,11 +67,21 @@ function registerWsAdmin() {
 		if (tokenStale) return;
 		const { jwt } = localStorage;
 		const { role, exp } = decodeJWT(jwt);
+		const isExpired = exp * 1000 < Date.now();
 		if (role === 'ADMIN') {
-			console.log('JWT expires', new Date(exp * 1000));
-			console.log('ws.registerAdmin');
+			if (isExpired) {
+				console.log('jwt is expired');
+			} else {
+				const d = new Date(exp * 1000);
+				console.log('JWT expires', d.getHours() + ':' + d.getMinutes().toString().padStart(2, '0'));
+			}
 			userStore.update((v) => {
-				v.role = role;
+				if (isExpired) {
+					v.role = '';
+				} else {
+					console.log('ws.registerAdmin');
+					v.role = role;
+				}
 				return v;
 			});
 			emit('admin', jwt);
@@ -82,6 +92,10 @@ function registerWsAdmin() {
 on('open', () => {
 	registerWsAdmin();
 });
+
+setTimeout(() => {
+	registerWsAdmin();
+}, 1000);
 
 export function setUserStore(u) {
 	userStore = u;

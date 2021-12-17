@@ -32,10 +32,14 @@ const wss: Promise<WSServer> = new Promise((res) =>
 
 					switch (type) {
 						case 'admin':
-							const { role, name } = await jwt.verify(data, JWT_SECRET);
-							if (role === 'ADMIN') {
-								console.log('socket.registerAdmin', name);
-								admins.push(ws);
+							try {
+								const { role, name } = await jwt.verify(data, JWT_SECRET);
+								if (role === 'ADMIN') {
+									console.log('socket.registerAdmin', name);
+									admins.push(ws);
+								}
+							} catch (error) {
+								console.log('ws.jwt expired');
 							}
 							break;
 					}

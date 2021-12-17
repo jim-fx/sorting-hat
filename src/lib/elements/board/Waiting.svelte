@@ -13,6 +13,7 @@
 		<h1>Quiz startet in {secondsLeft}</h1>
 	</Timer>
 {:else}
+	<img src="/icons/qr.svg" alt="" />
 	<h3>Registriert euch für</h3>
 	<h1>{quiz.description}</h1>
 	<div class="users">
@@ -28,6 +29,15 @@
 {/if}
 
 <style>
+	img {
+		width: 150px;
+		height: 150px;
+		position: fixed;
+		top: 50px;
+		left: 50px;
+		border-radius: 10px;
+	}
+
 	.users {
 		max-height: 30vh;
 		overflow: hidden;

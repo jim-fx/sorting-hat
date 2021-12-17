@@ -12,7 +12,7 @@
 		isLoading = true;
 		const success = await c.login(name, password);
 		if (success) {
-			goto('/admin/quiz');
+			goto('/admin');
 		} else {
 			isLoading = false;
 		}

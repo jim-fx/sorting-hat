@@ -19,7 +19,6 @@ export const handle: Handle = async ({ request, resolve }) => {
 	const response = await resolve(request);
 
 	if (wrongJWT && !request.path.includes('auth')) {
-		response.status = 401;
 		console.log('stale jwt');
 	}
 
