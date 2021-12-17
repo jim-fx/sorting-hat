@@ -24,7 +24,7 @@ model User {
 }
 
 model Quiz {
-  uid        String   @id @default(cuid())
+  id        Int   @id @default(autoincrement())
   created_at DateTime @default(now())
   type       String
   data       String

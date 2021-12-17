@@ -5,6 +5,7 @@ import DataSet from './data';
 import type { DataSetID } from './data';
 import * as BoardState from '$lib/state';
 import * as question from './Question';
+import prisma from '$lib/db';
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
@@ -211,7 +212,14 @@ export function endQuestion() {
 		} else {
 			state.state = 'results';
 			BoardState.addHousePoints(getHousePoints());
+
 			emit('quiz.state', state.state);
+			prisma.quiz.create({
+				data: {
+					type: state.type,
+					data: JSON.stringify(serialize(true))
+				}
+			});
 		}
 	} else {
 		question.end(state?.activeQuestion);
