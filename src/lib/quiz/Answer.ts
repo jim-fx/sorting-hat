@@ -1,32 +1,31 @@
 import { nanoid } from 'nanoid';
-import type Question from './Question';
 
-export default class Answer {
-	question: Question;
-
+export interface InternalAnswerState {
 	id: string;
 	userId: string;
 	value: string;
 
-	votes: Set<string> = new Set();
+	votes: Set<string>;
+}
 
-	constructor(q: Question, value: string, userId?: string) {
-		this.id = nanoid();
-		this.question = q;
-		this.value = value;
-		this.userId = userId;
-	}
+export function serialize(a: InternalAnswerState, showVotes = false) {
+	return {
+		id: a.id,
+		userId: a.userId,
+		value: a.value,
+		votes: showVotes ? [...a.votes.values()] : []
+	};
+}
 
-	addVote(userId: string) {
-		this.votes.add(userId);
-	}
+export function addVote(a: InternalAnswerState, userId) {
+	a.votes.add(userId);
+}
 
-	toJSON() {
-		return {
-			id: this.id,
-			userId: this.userId,
-			value: this.value,
-			votes: [...this.votes.values()]
-		};
-	}
+export function create(value: string, userId?: string): InternalAnswerState {
+	return {
+		id: nanoid(),
+		value,
+		userId,
+		votes: new Set()
+	};
 }

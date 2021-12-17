@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { QuizType } from '$lib/stores';
+	import type { QuizState } from '$lib/quiz';
 	import { slide, scale } from 'svelte/transition';
 	import Crest from '../Crest.svelte';
 	import Timer from '../Timer.svelte';
 
-	export let quiz: QuizType;
+	export let quiz: QuizState;
 	$: users = quiz?.users || [];
 </script>
 

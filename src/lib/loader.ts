@@ -14,7 +14,7 @@ function loadTexture(url: string): any {
 	return tLoader.load(url);
 }
 
-function loadModel(url: string, xhrCallback: () => void): Promise<GLTF> {
+function loadModel(url: string, xhrCallback: (xhr: any) => void): Promise<GLTF> {
 	return loader.loadAsync(url, xhrCallback);
 }
 

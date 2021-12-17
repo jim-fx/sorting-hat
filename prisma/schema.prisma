@@ -10,15 +10,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  uid        String  @id @default(cuid())
-  created_at DateTime
-  name       String
-  role       Role @default(USER)
-  hash       String
-}
-
 enum Role {
   USER
   ADMIN
+}
+
+model User {
+  uid        String   @id @default(cuid())
+  created_at DateTime @default(now())
+  name       String
+  role       Role     @default(USER)
+  hash       String
+}
+
+model Quiz {
+  uid        String   @id @default(cuid())
+  created_at DateTime @default(now())
+  type       String
+  data       String
+}
+
+model Point {
+  name    String @id
+  pts     Int
+  State   State  @relation(references: [id], fields: [stateId])
+  stateId Int
+}
+
+model State {
+  id     Int     @id @default(autoincrement())
+  state  String
+  points Point[]
 }

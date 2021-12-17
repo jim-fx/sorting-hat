@@ -1,23 +1,31 @@
 <script lang="ts">
-	import { pointStore, quiz } from '$lib/stores';
-	import { get } from '$lib/client-api';
+	import { getStateStore, pointStore, quiz } from '$lib/stores';
+	import { get, on } from '$lib/client-api';
 
-	import { Running, Waiting, Results } from '$lib/elements/board';
+	import { Running, Waiting, Results, HousePoints } from '$lib/elements/board';
 	import { onMount } from 'svelte';
+
+	const state = getStateStore();
 
 	onMount(async () => {
 		const response = await get('api/quiz/points');
 		const pts = await response.json();
 		pointStore.set(pts);
+
+		state.init();
 	});
 </script>
 
-{#if $quiz?.state === 'registration'}
-	<Waiting quiz={$quiz} />
-{:else if $quiz?.state === 'running'}
-	<Running quiz={$quiz} />
-{:else if $quiz?.state === 'results'}
-	<Results quiz={$quiz} />
+{#if $state?.state === 'quiz'}
+	{#if $quiz?.state === 'registration'}
+		<Waiting quiz={$quiz} />
+	{:else if $quiz?.state === 'running'}
+		<Running quiz={$quiz} />
+	{:else if $quiz?.state === 'results'}
+		<Results quiz={$quiz} />
+	{/if}
+{:else}
+	<HousePoints houses={$state.points} />
 {/if}
 
 <style>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { lerp } from '$lib/animator/helpers';
 
-	import { capitalize, easeInOutQuint, hexToFilter } from '$lib/helpers';
+	import { capitalize, easeInOutQuint } from '$lib/helpers';
 
 	import { HouseColors } from '$lib/houses';
 	import Crest from '../Crest.svelte';
@@ -142,10 +142,6 @@
 	.container::before {
 		content: '';
 		position: absolute;
-	}
-
-	.glitter {
-		opacity: 0.3;
 	}
 
 	.color-top {

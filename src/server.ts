@@ -1,6 +1,7 @@
 import polka from 'polka';
 import { WebSocketServer } from 'ws';
 import cors from 'cors';
+//@ts-ignore
 import { assetsMiddleware, kitMiddleware, prerenderedMiddleware } from '../build/middlewares.js';
 
 const { PORT = 3000 } = process.env;

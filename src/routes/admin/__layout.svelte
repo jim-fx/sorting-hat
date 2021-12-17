@@ -1,8 +1,8 @@
 <script>
-	import { userData } from '$lib/stores';
 	import { setUserStore } from '$lib/client-api';
-	import { onMount } from 'svelte';
 
+	import { userData } from '$lib/stores';
+	import { onMount } from 'svelte';
 	onMount(() => {
 		setUserStore(userData);
 	});

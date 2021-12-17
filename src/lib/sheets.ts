@@ -46,7 +46,18 @@ async function _getData(): Promise<{ Name: string; Alter: number }[]> {
 	const [headers, ...rows] = _rows;
 
 	function parseRow(row: string[]) {
-		const o = {};
+		const o: {
+			Schlafen?: boolean;
+			Frauen?: boolean;
+			Single?: boolean;
+			Männer?: boolean;
+			Veggies?: boolean;
+			Name: string;
+			Alter: number;
+		} = {
+			Name: '',
+			Alter: 0
+		};
 
 		row.forEach((v, i) => {
 			o[headers[i]] = v;
@@ -78,6 +89,7 @@ export async function getData() {
 }
 
 export async function addPerson({ name, confidence, house }): Promise<unknown> {
+	//@ts-ignore
 	return (await googleApi).spreadsheets.values.append({
 		auth, //auth object
 		spreadsheetId, // spreadsheet id

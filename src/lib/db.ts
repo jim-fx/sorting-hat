@@ -1,5 +1,5 @@
-import pkg from '@prisma/client';
-const { PrismaClient } = pkg;
+import Prisma, * as PrismaScope from '@prisma/client';
+const PrismaClient = Prisma?.PrismaClient || PrismaScope?.PrismaClient;
 import { hash } from 'bcrypt';
 import { ADMIN_PASS } from '$lib/config';
 

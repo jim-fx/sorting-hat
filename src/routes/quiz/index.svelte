@@ -8,6 +8,8 @@
 	import Timer from '$lib/elements/Timer.svelte';
 	import Crest from '$lib/elements/Crest.svelte';
 	import { fade } from 'svelte/transition';
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
 	let showConfetti;
 
@@ -66,6 +68,41 @@
 			console.log($questionStore, $quiz);
 		}
 	}
+
+	let hideCardContent = false;
+	let doAflip: () => void;
+	function flip() {
+		hideCardContent = true;
+		doAflip?.();
+		setTimeout(() => {
+			hideCardContent = false;
+		}, 1000);
+	}
+
+	$: delayedActiveQuestion = hideCardContent
+		? lastQuestion || $quiz?.activeQuestion
+		: $quiz.activeQuestion;
+
+	let lastQuestion;
+	let lastId = null;
+	quiz.subscribe((v) => {
+		if (hideCardContent) return;
+		let id = v?.activeQuestion?.id;
+		let needsFlip = id !== lastId;
+		if (!needsFlip) return;
+		if (lastId) {
+			lastQuestion = $quiz?.questions.find((q) => q.id === lastId);
+			console.table({ lastId, id, lastQuestion });
+		}
+		if (needsFlip) flip();
+		lastId = id;
+	});
+
+	onMount(() => {
+		if (!$userData.name || !$userData.house) {
+			goto('/quiz/register');
+		}
+	});
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
@@ -105,21 +142,24 @@
 	</Card>
 {:else if quizState === 'running' && $quiz?.activeQuestion?.id && registered}
 	<Card
+		bind:doAflip
 		flipped={questionState !== 'closed' &&
 			answeredActiveQuestion &&
 			questionState !== 'voting-open'}
 		bind:showConfetti
 	>
 		<div slot="front">
-			<Question
-				bind:textValue
-				userData={$quizUserData}
-				bind:questionStore
-				on:vote={handleVote}
-				on:answer={handleAnswer}
-				on:text={handleAnswer}
-				question={$quiz.activeQuestion}
-			/>
+			{#if delayedActiveQuestion}
+				<Question
+					bind:textValue
+					userData={$quizUserData}
+					bind:questionStore
+					on:vote={handleVote}
+					on:answer={handleAnswer}
+					on:text={handleAnswer}
+					question={delayedActiveQuestion}
+				/>
+			{/if}
 		</div>
 
 		<div slot="back">
@@ -140,7 +180,7 @@
 	<p>Quiz Already started</p>
 {/if}
 
-<div class="crest" transition:fade={{ duration: 5000 }}>
+<div class="crest" in:fade={{ duration: 5000 }}>
 	<Crest house={$userData.house} />
 </div>
 

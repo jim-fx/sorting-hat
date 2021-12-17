@@ -1,10 +1,12 @@
 <script lang="ts">
 	import type { HouseName } from '$lib/houses';
-	import { pointStore, QuizType } from '$lib/stores';
+	import type { QuizState } from '$lib/quiz';
+	import { pointStore } from '$lib/stores';
 	import LeaderBoard from '../admin/LeaderBoard.svelte';
 	import Glass from './Glass.svelte';
+	import HousePoints from './HousePoints.svelte';
 
-	export let quiz: QuizType;
+	export let quiz: QuizState;
 	$: question = quiz?.activeQuestion;
 	$: answers = question?.answers;
 	$: answer = answers?.find((a) => a?.id === question?.correctAnswer);
@@ -24,7 +26,6 @@
 		return quiz.users.find((user) => user.id === userId);
 	}
 
-	$: sortedHouses = houses.sort((a, b) => (a.pts > b.pts ? -1 : 1));
 	$: sortedUsers = Object.entries($pointStore.users)
 		.map(([userId, pts]) => {
 			console.log(userId, pts);
@@ -36,26 +37,10 @@
 		.sort((a, b) => (a.pts > b.pts ? -1 : 1));
 
 	$: console.log(sortedUsers);
-
-	// setInterval(() => {
-	// 	pointStore.update((p) => {
-	// 		p.house['gryffindor'] = Math.round(Math.random() * 20);
-	// 		p.house['ravenclaw'] = Math.round(Math.random() * 20);
-	// 		p.house['slytherin'] = Math.round(Math.random() * 20);
-	// 		p.house['hufflepuff'] = Math.round(Math.random() * 20);
-	// 		return p;
-	// 	});
-	// }, 5000);
 </script>
 
 <div class="container">
-	<div class="house-wrapper">
-		{#each houses.sort((a, b) => (a.name > b.name ? -1 : 1)) as h}
-			<div class="glass-wrapper">
-				<Glass house={h} maxPoints={Math.max(5, sortedHouses[0].pts)} />
-			</div>
-		{/each}
-	</div>
+	<HousePoints houses={$pointStore.house} />
 
 	<div class="current-question">
 		{#if question}
@@ -67,7 +52,12 @@
 				<p>{answered}/{quiz.users.length}</p>
 			{/if}
 			{#each answers as a}
-				<p class="answer" class:right={answer && answer.id === a.id}>{a.value}</p>
+				<p
+					class="answer"
+					class:right={question?.state === 'closed' && answer && answer.id === a.id}
+				>
+					{a.value}
+				</p>
 			{/each}
 		{/if}
 	</div>
@@ -88,25 +78,6 @@
 		grid-template-areas:
 			'left question'
 			'left info';
-	}
-
-	.house-wrapper {
-		display: flex;
-		grid-area: left;
-		place-self: center;
-		justify-self: center;
-		/* background: url('/card-front.png'); */
-		max-width: 75vh;
-		background-size: 100% 100%;
-		padding: 20px 0px;
-		box-sizing: border-box;
-		height: fit-content;
-	}
-
-	.glass-wrapper {
-		width: 23%;
-		display: inline-block;
-		filter: drop-shadow(7px 7px 18px black);
 	}
 
 	.current-question {

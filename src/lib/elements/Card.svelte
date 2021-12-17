@@ -1,13 +1,28 @@
 <script lang="ts">
 	export let flipped = false;
 
-	import { store } from '$lib/pointerStore';
-	import { scale } from 'svelte/transition';
+	import { orientation } from '$lib/stores';
 	import Confetti from './Confetti.svelte';
 
 	let showConfetti1;
 	let showConfetti2;
 	let showConfetti3;
+
+	let flip = false;
+	let hideAnimations = false;
+
+	export const doAflip = () => {
+		flip = true;
+		setTimeout(() => {
+			hideAnimations = true;
+			setTimeout(() => {
+				flip = false;
+				setTimeout(() => {
+					hideAnimations = false;
+				}, 2000);
+			}, 100);
+		}, 2000);
+	};
 
 	export const showConfetti = () => {
 		showConfetti1?.();
@@ -18,7 +33,7 @@
 	$: strength = flipped ? 1 : 10;
 </script>
 
-<div class="scene" class:flipped in:scale>
+<div class="scene" class:flipped class:flip class:hideAnimations>
 	<Confetti
 		amount={200}
 		--opacity="0.4"
@@ -31,8 +46,8 @@
 	<div
 		class="card"
 		style={`
-		--x:${$store.x * strength}deg;
-		--y:${$store.y * -strength}deg;
+		--x:${$orientation.x * strength}deg;
+		--y:${$orientation.y * -strength}deg;
 		`}
 	>
 		<div class="corner-wrapper">
@@ -100,6 +115,23 @@
 
 	.flipped > .card {
 		animation: flipCard 2s forwards cubic-bezier(0.83, 0, 0.17, 1);
+	}
+
+	.flip > .card {
+		animation: flip 2s forwards cubic-bezier(0.83, 0, 0.17, 1);
+	}
+
+	.hideAnimations > .card {
+		animation-duration: 0s !important;
+	}
+
+	@keyframes flip {
+		0% {
+			transform: rotateY(var(--x)) rotateX(var(--y)) translateZ(0px);
+		}
+		100% {
+			transform: rotateY(360deg) rotateX(var(--y)) translateZ(0px);
+		}
 	}
 
 	@keyframes flipCard {

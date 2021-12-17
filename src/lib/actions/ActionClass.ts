@@ -15,7 +15,7 @@ export class Action {
 	nextActions: { name?: string; action: Action }[] = [];
 	data: unknown;
 
-	element: SvelteComponent;
+	element: typeof SvelteComponent;
 
 	private events: { [eventName: string]: ((data?: unknown) => void)[] } = {};
 
@@ -26,7 +26,7 @@ export class Action {
 	}: {
 		audioFile?: string;
 		text: string;
-		element: SvelteComponent;
+		element?: typeof SvelteComponent;
 	}) {
 		this.text = text;
 		this.element = element;
@@ -112,7 +112,7 @@ export class Action {
 		}
 	}
 
-	addEventListener(eventName: string, callback: () => void): () => void {
+	addEventListener(eventName: string, callback: (data: any) => void): () => void {
 		this.events[eventName] =
 			eventName in this.events ? [...this.events[eventName], callback] : [callback];
 		return () => {

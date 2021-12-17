@@ -9,10 +9,6 @@
 	$: activeQuestion = $quiz?.activeQuestion;
 	$: users = $quiz?.users;
 
-	$: if ($quiz) {
-		window['quiz'] = $quiz;
-	}
-
 	async function handleKeyDown({ key }) {
 		if (key === 'L') {
 			const q = await c.get('api/quiz');
@@ -45,7 +41,7 @@
 	<p>{activeQuestion?.description}</p>
 
 	{#if activeQuestion?.answers}
-		<AnswerTable answers={activeQuestion.answers} {users} />
+		<AnswerTable quiz={$quiz} />
 	{/if}
 {:else if quizState === 'results'}
 	<p>results</p>

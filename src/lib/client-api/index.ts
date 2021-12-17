@@ -3,9 +3,10 @@ import { decodeJWT } from '$lib/helpers';
 // To wake up the heroku instance
 //get('api/houses');
 import { emit } from './ws';
+import type { userData } from '$lib/stores';
 
 const { VITE_API_URL = '' } = import.meta.env as unknown as { VITE_API_URL: string };
-let userStore;
+let userStore: typeof userData;
 
 let tokenStale = false;
 
@@ -42,8 +43,6 @@ async function send(
 
 	const response = await fetch(url, options);
 
-	console.log(response, userStore);
-
 	if (response.status === 401 && userStore) {
 		tokenStale = true;
 		userStore.update((u) => {
@@ -63,12 +62,14 @@ import { on } from './ws';
 export { emit, on } from './ws';
 
 function registerWsAdmin() {
+	console.log('register', userStore);
 	if (browser && 'jwt' in localStorage && userStore) {
 		if (tokenStale) return;
 		const { jwt } = localStorage;
-		const { role } = decodeJWT(jwt);
-		console.log('registerWsAdmin');
+		const { role, exp } = decodeJWT(jwt);
 		if (role === 'ADMIN') {
+			console.log('JWT expires', new Date(exp * 1000));
+			console.log('ws.registerAdmin');
 			userStore.update((v) => {
 				v.role = role;
 				return v;
@@ -84,7 +85,6 @@ on('open', () => {
 
 export function setUserStore(u) {
 	userStore = u;
-	registerWsAdmin();
 }
 
 export function post(apiPath: string, body: unknown, token?: string): Promise<Response> {

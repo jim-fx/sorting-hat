@@ -22,44 +22,43 @@ let opened: Promise<void>;
 function createSocket(): WebSocket {
 	if (!('WebSocket' in globalThis)) return;
 
+	let res;
+	opened = new Promise((_res) => (res = _res));
+
 	let url = VITE_API_URL || window.location.host;
 
 	const isSecure = window.location.protocol.includes('s');
 
-	let _s = new WebSocket(
+	socket = new WebSocket(
 		`ws${isSecure ? 's' : ''}://` + url.replace('https://', '').replace('http://', '')
 	);
-	_s.onmessage = (ev) => {
+	socket.onmessage = (ev) => {
 		handleMessage(ev.data);
 	};
 
-	let res;
-	opened = new Promise((_res) => {
-		res = _res;
-	});
-
-	_s.onopen = () => {
-		console.log('Websocket Connected');
+	socket.onopen = () => {
+		console.log('Websocket Connected', events);
 		res();
-		setTimeout(() => {
-			if ('open' in events) {
-				events['open'].forEach((cb) => cb(_s));
-			}
-		}, 50);
-		res();
+		if ('open' in events) {
+			setTimeout(() => {
+				events['open'].forEach((cb) => cb(socket));
+			}, 200);
+		}
 	};
-	_s.onclose = () => {
+
+	socket.onclose = () => {
+		res();
 		setTimeout(async () => {
 			console.log('Reconnecting');
-			socket = createSocket();
+			createSocket();
 		}, 500);
 	};
 
-	return _s;
+	return socket;
 }
 
 export function on(event: string, cb: (data?: unknown) => void): () => void {
-	if (!socket) socket = createSocket();
+	if (!socket) createSocket();
 	events[event] = event in events ? [...events[event], cb] : [cb];
 	return () => {
 		events[event] = events[event].filter((_cb) => _cb !== cb);
@@ -67,7 +66,8 @@ export function on(event: string, cb: (data?: unknown) => void): () => void {
 }
 
 export async function emit(type: string, data?: unknown): Promise<void> {
-	if (!socket) socket = createSocket();
+	if (!socket) createSocket();
 	await opened;
+	console.log('ws.emit', { type, data }, socket);
 	socket.send(JSON.stringify({ type, data }));
 }

@@ -1,8 +1,8 @@
 import quiz from '$lib/quiz';
 
-export async function get() {
+export async function get({ locals }) {
 	return {
-		body: quiz.toJSON()
+		body: quiz.serialize(locals.isAdmin)
 	};
 }
 

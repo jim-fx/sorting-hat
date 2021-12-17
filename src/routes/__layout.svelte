@@ -1,15 +1,14 @@
 <script lang="ts">
 	import * as c from '$lib/client-api';
 	import Overlay from '$lib/elements/Overlay.svelte';
-	import pointerStore from '$lib/pointerStore';
-	import { quiz, userData } from '$lib/stores';
+	import { orientation, quiz, userData } from '$lib/stores';
 	import { onMount } from 'svelte';
 
 	onMount(async () => {
 		const res = await c.get('api/quiz');
 		quiz.set(await res.json());
-		pointerStore.init();
 		c.setUserStore(userData);
+		orientation.init();
 	});
 </script>
 

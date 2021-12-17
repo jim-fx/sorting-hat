@@ -1,5 +1,3 @@
-import { Color, hexToRgb, Solver } from './colors';
-
 function decodeBase64(s) {
 	var e = {},
 		i,
@@ -69,16 +67,6 @@ export function mergeDeep(target, ...sources) {
 	}
 
 	return mergeDeep(target, ...sources);
-}
-
-const c = new Color();
-
-export function hexToFilter(s: string) {
-	const rgb = hexToRgb(s);
-	c.set(rgb[0], rgb[1], rgb[2]);
-	const solver = new Solver(c);
-	const result = solver.solve();
-	return result.filter;
 }
 
 export function easeInOutQuint(x: number): number {

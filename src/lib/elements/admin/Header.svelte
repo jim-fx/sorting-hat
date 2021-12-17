@@ -1,11 +1,12 @@
 <script lang="ts">
-	import type { QuestionType, QuizType } from '$lib/stores';
+	import type { QuizState } from '$lib/quiz';
+
 	import { createEventDispatcher } from 'svelte';
 	import Timer from '../Timer.svelte';
 
 	const dispatch = createEventDispatcher();
 
-	export let quiz: QuizType;
+	export let quiz: QuizState;
 
 	$: question = quiz?.activeQuestion;
 	$: quizState = quiz?.state;
@@ -38,9 +39,15 @@
 			{:else if questionState === 'voting-open'}
 				<button on:click={() => send('close-voting')}>Close Voting</button>
 			{:else if questionState === 'closed'}
-				<button on:click={() => send('end-question')}>Next Question</button>
+				{#if question?.index === quiz.amount - 1}
+					<button on:click={() => send('end-question')}>End Quiz</button>
+				{:else}
+					<button on:click={() => send('end-question')}>Next Question</button>
+				{/if}
 			{/if}
 
+			<button on:click={() => confirm('End Quiz?') && send('end-quiz')}>End Quiz</button>
+		{:else if quizState === 'results'}
 			<button on:click={() => confirm('End Quiz?') && send('end-quiz')}>End Quiz</button>
 		{/if}
 	</div>

@@ -1,196 +1,210 @@
 import { nanoid } from 'nanoid';
-import Answer from './Answer';
-import type Quiz from './Quiz';
+import * as answer from './Answer';
+import type { InternalAnswerState } from './Answer';
+import { emit, emitAdmin, QuizState, getPoints, findUserByID } from './Quiz';
+import { state } from '.';
 
-type QuestionState = 'idle' | 'open' | 'voting-open' | 'closed';
-export default class Question {
+type QuestionType = 'multiple' | 'voting';
+
+export interface InternalQuestionState {
 	id: string;
 	index: number;
-	type: 'multiple' | 'voting';
+	type: QuestionType;
+	state: 'idle' | 'open' | 'voting-open' | 'closed';
 	description: string;
-	quiz: Quiz;
-	nextQuestion: Question;
-	state: QuestionState = 'idle';
-	answers: Answer[] = [];
+	nextQuestion?: InternalQuestionState;
+	answers: InternalAnswerState[];
 	correctAnswer: string;
+}
 
-	constructor(q: Quiz, d: QuestionData, index: number) {
-		this.quiz = q;
-		this.id = nanoid();
-		this.index = index;
+export type QuestionState = ReturnType<typeof serialize>;
 
-		if (d.answers) {
-			this.answers = d.answers.map((v) => {
-				return new Answer(this, v);
-			});
-			this.type = 'multiple';
-		} else {
-			this.type = 'voting';
-		}
+export function serialize(q: InternalQuestionState, _isAdmin = false) {
+	if (!q) return;
+	const isAdmin = _isAdmin === true;
+	return {
+		id: q.id,
+		index: q.index,
+		type: q.type,
+		state: q.state,
+		answers: q?.answers?.map((a) => answer.serialize(a, isAdmin || q.state === 'closed')) || [],
+		description: q.description,
+		correctAnswer: (q.state === 'closed' || isAdmin) && q.correctAnswer
+	};
+}
 
-		if ("correct" in d) {
-			this.correctAnswer = this.answers[d.correct].id;
-		}
+export function create(questionData: QuestionData, index: number): InternalQuestionState {
+	let type = (
+		'answers' in questionData && questionData?.answers?.length ? 'multiple' : 'voting'
+	) as QuestionType;
 
-		this.description = d.description;
+	const { description } = questionData;
+
+	let answers = [];
+	if (type === 'multiple') {
+		answers = questionData?.answers?.map((v) => answer.create(v));
 	}
 
-	findAnswerById(id: string) {
-		return this.answers.find((a) => a.id === id);
+	let correctAnswer;
+	if ('correct' in questionData && answers[questionData.correct]?.id) {
+		correctAnswer = answers[questionData.correct].id;
 	}
 
-	voteForAnswer(answerId: string, userId: string) {
-		this.answers = this.answers.map((a) => {
-			if (a.votes.has(userId)) {
-				if (a.id !== answerId) a.votes.delete(userId);
-			} else if (a.id === answerId) {
-				a.addVote(userId);
-			}
-			return a;
+	return {
+		type,
+		state: 'idle',
+		answers,
+		description,
+		correctAnswer,
+		id: nanoid(),
+		nextQuestion: undefined,
+		index
+	};
+}
+
+export function findAnswerById(q: InternalQuestionState, id: string) {
+	return q.answers.find((a) => a.id === id);
+}
+
+export function voteForAnswer(q: InternalQuestionState, answerId: string, userId: string) {
+	q.answers = q.answers.map((a) => {
+		if (a.votes.has(userId)) {
+			if (a.id !== answerId) a.votes.delete(userId);
+		} else if (a.id === answerId) {
+			answer.addVote(a, userId);
+		}
+		return a;
+	});
+
+	if (q.state === 'voting-open') {
+		emit('question', serialize(q));
+	}
+}
+
+export function addAnswer(q: InternalQuestionState, userId: string, value: string) {
+	let a: InternalAnswerState;
+
+	if (q.type === 'multiple') {
+		q.answers.forEach((a) => {
+			a.votes.delete(userId);
 		});
 
-		if (this.state === 'voting-open') {
-			this.quiz.emit('question', this.toJSON());
-		}
-	}
-
-	addAnswer(userId: string, value: string) {
-		let a: Answer;
-
-		if (this.type === 'multiple') {
-			this.answers.forEach((a) => {
-				a.votes.delete(userId);
-			});
-
-			a = this.findAnswerById(value);
-			a.addVote(userId);
+		a = findAnswerById(q, value);
+		answer.addVote(a, userId);
+	} else {
+		a = q.answers.filter((a) => a.userId === userId)[0];
+		if (a) {
+			a.value = value;
 		} else {
-			a = this.answers.filter((a) => a.userId === userId)[0];
-			if (a) {
-				a.value = value;
-			} else {
-				a = new Answer(this, value, userId);
-			}
-			this.answers.push(a);
+			a = answer.create(value, userId);
 		}
-		this.quiz.emitAdmin(
-			'question.answers',
-			this.answers.map((v) => v.toJSON())
-		);
-
-		return a.toJSON();
+		q.answers.push(a);
 	}
 
-	setState(s: QuestionState) {
-		let oldState = this.state;
-		this.state = s;
-		switch (s) {
-			case 'open':
-				this.quiz.activeQuestion = this;
-				this.quiz.emit('question.active', this.toJSON());
-				break;
-			case 'voting-open':
-				if (this.type === 'voting') {
-					this.quiz.emit('question', this.toJSON());
-				}
-				break;
-			case 'closed':
-				if (this.type === 'voting') {
-					const answers = this.answers.sort((a, b) => (a.votes.size > b.votes.size ? 1 : -1));
-					this.correctAnswer = answers[0].id;
-				}
-				this.quiz.emit('question.correctAnswer', this.correctAnswer);
-				this.quiz.emit('quiz.points', this.quiz.getPoints());
-				break;
-		}
-		console.log('question.state ', oldState + ' --> ' + this.state);
-		this.quiz.emit('question.state', this.state);
-	}
+	emitAdmin(
+		'question.answers',
+		q.answers.map((a) => answer.serialize(a, true))
+	);
 
-	start() {
-		if (this.state !== 'idle') return;
-		this.setState('open');
-	}
+	return answer.serialize(a);
+}
 
-	end() {
-		if (this.type === 'voting') {
-			if (this.state === 'open') {
-				this.setState('voting-open');
-			} else {
-				this.setState('closed');
+export function setState(q: InternalQuestionState, s: InternalQuestionState['state']) {
+	let oldState = q.state;
+	q.state = s;
+	switch (s) {
+		case 'open':
+			emit('question.active', serialize(q));
+			break;
+		case 'voting-open':
+			if (q.type === 'voting') {
+				emit('question', serialize(q));
 			}
+			break;
+		case 'closed':
+			if (q.type === 'voting') {
+				const answers = q.answers.sort((a, b) => (a.votes.size > b.votes.size ? 1 : -1));
+				q.correctAnswer = answers[0].id;
+			}
+			emit('question.correctAnswer', q.correctAnswer);
+			emit('quiz.points', getPoints());
+			break;
+	}
+	console.log('question.state ', oldState + ' --> ' + q.state);
+	emit('question.state', q.state);
+}
+
+export function start(q: InternalQuestionState) {
+	if (q.state !== 'idle') return;
+	setState(q, 'open');
+}
+
+export function end(q: InternalQuestionState) {
+	if (q.type === 'voting') {
+		if (q.state === 'open') {
+			setState(q, 'voting-open');
 		} else {
-			if (this.state === 'open') {
-				this.setState('closed');
+			setState(q, 'closed');
+		}
+	} else {
+		if (q.state === 'open') {
+			setState(q, 'closed');
+		}
+	}
+}
+
+export function getHousePoints(q: InternalQuestionState) {
+	const houses = {
+		hufflepuff: 0,
+		ravenclaw: 0,
+		gryffindor: 0,
+		slytherin: 0
+	};
+
+	if (q.state !== 'closed') return houses;
+
+	if (q.type === 'multiple') {
+		q.answers.forEach((a) => {
+			if (a.id === q.correctAnswer) {
+				a.votes.forEach((uId) => {
+					const { house } = findUserByID(uId);
+					if (house in houses) {
+						houses[house]++;
+					}
+				});
 			}
-		}
+		});
+	} else if (q.type === 'voting') {
+		q.answers.forEach((a) => {
+			const { house } = findUserByID(a.userId);
+			if (house in houses) {
+				houses[house] += a.votes.size;
+			}
+		});
 	}
 
-	getHousePoints() {
-		const houses = {
-			hufflepuff: 0,
-			ravenclaw: 0,
-			gryffindor: 0,
-			slytherin: 0
-		};
+	return houses;
+}
 
-		if (this.state !== 'closed') return houses;
+export function getUserPoints(q: InternalQuestionState) {
+	if (q.state !== 'closed') return [];
 
-		if (this.type === 'multiple') {
-			this.answers.forEach((a) => {
-				if (a.id === this.correctAnswer) {
-					a.votes.forEach((uId) => {
-						const { house } = this.quiz.findUserByID(uId);
-						if (house in houses) {
-							houses[house]++;
-						}
-					});
-				}
-			});
-		} else if (this.type === 'voting') {
-			this.answers.forEach((a) => {
-				const { house } = this.quiz.findUserByID(a.userId);
-				if (house in houses) {
-					houses[house] += a.votes.size;
-				}
-			});
-		}
-
-		return houses;
-	}
-
-	getUserPoints() {
-		if (this.state !== 'closed') return [];
-
-		if (this.type === 'multiple') {
-			const correctAnswer = this.answers.find((a) => a.id === this.correctAnswer);
-			return [...correctAnswer?.votes?.values()].map((u) => {
+	if (q.type === 'multiple') {
+		const correctAnswer = q.answers.find((a) => a.id === q.correctAnswer);
+		return [...correctAnswer?.votes?.values()].map((u) => {
+			return {
+				userId: u,
+				pts: 1
+			};
+		});
+	} else if (q.type === 'voting') {
+		return q.answers
+			.map((a) => {
 				return {
-					userId: u,
-					pts: 1
+					userId: a.userId,
+					pts: a.votes.size
 				};
-			});
-		} else if (this.type === 'voting') {
-			return this.answers
-				.map((a) => {
-					return {
-						userId: a.userId,
-						pts: a.votes.size
-					};
-				})
-				.filter((v) => v.pts > 0);
-		}
-	}
-
-	toJSON(isAdmin = false) {
-		return {
-			state: this.state,
-			type: this.type,
-			index: this.index,
-			answers: this.answers.map((q) => q.toJSON()),
-			description: this.description,
-			correctAnswer: (this.state === 'closed' || isAdmin) && this.correctAnswer,
-			id: this.id
-		};
+			})
+			.filter((v) => v.pts > 0);
 	}
 }

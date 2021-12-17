@@ -1,7 +1,12 @@
-import Question from './Question';
+import type { InternalQuestionState } from './Question';
 import { nanoid } from 'nanoid';
 import wss from '$lib/wss';
-import * as data from './data';
+import DataSet from './data';
+import type { DataSetID } from './data';
+import * as BoardState from '$lib/state';
+import * as question from './Question';
+
+type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
 const houses = {
 	hufflepuff: 0,
@@ -10,203 +15,218 @@ const houses = {
 	slytherin: 0
 };
 
-export default class Quiz {
-	name: 'Quiz' = 'Quiz';
-	questions: Question[];
+export type User = {
+	name: string;
+	id: string;
+	house: string;
+};
+
+export type InternalState = {
+	name: string;
+	questions: InternalQuestionState[];
 	description: string;
-	id = nanoid();
-	type: string = 'main';
-	activeQuestion: Question;
+	id: string;
+	type: DataSetID;
+	readonly types: DataSetID[];
+	readonly amount: number;
+	activeQuestion?: InternalQuestionState;
 	startsAt: number;
+	state: 'registration' | 'running' | 'results';
+	users: User[];
+};
 
-	state: 'registration' | 'running' | 'results' = 'registration';
+export type QuizState = ReturnType<typeof serialize>;
 
-	users: { name: string; id: string; house: string }[] = [];
+export let state: InternalState = {
+	name: 'Quiz',
+	questions: [],
+	description: '',
+	id: nanoid(),
+	type: 'main',
+	types: Object.keys(DataSet) as DataSetID[],
+	get amount() {
+		return state.questions.length;
+	},
+	activeQuestion: undefined,
+	startsAt: 0,
+	state: 'registration',
+	users: []
+};
 
-	constructor() {
-		wss.then((ws) => {
-			ws.on('connection', (ws: any) => {
-				ws.send(JSON.stringify({ type: 'quiz', data: this.toJSON() }));
-			});
-		});
+export function serialize(isAdmin = false) {
+	const obj = {
+		...state,
+		questions: state.questions.map((q) => question.serialize(q, isAdmin)),
+		activeQuestion: question.serialize(state.activeQuestion, isAdmin)
+	};
+
+	return obj;
+}
+
+wss.then((ws) => {
+	ws.on('connection', (ws: any) => {
+		ws.send(JSON.stringify({ type: 'quiz', data: serialize() }));
+	});
+});
+
+export async function emit(eventType: string, data: unknown) {
+	console.log('quiz.emit ' + eventType);
+	(await wss).emit(eventType, data);
+}
+
+export async function emitAdmin(eventType: string, data: unknown) {
+	console.log('quiz.emitAdmin ' + eventType);
+	(await wss).emitAdmin(eventType, data);
+}
+
+export function getHouses() {
+	return state.users.reduce(
+		(acc, v) => {
+			acc[v.house]++;
+			return acc;
+		},
+		{ ...houses }
+	);
+}
+
+export function getHousePoints() {
+	const h = { ...houses };
+
+	for (let i = 0; i <= state?.activeQuestion?.index; i++) {
+		const q = question.getHousePoints(state.questions[i]);
+		h.gryffindor += q.gryffindor;
+		h.ravenclaw += q.ravenclaw;
+		h.slytherin += q.slytherin;
+		h.hufflepuff += q.hufflepuff;
 	}
 
-	start() {
-		this.state = 'running';
-		this.questions[0].start();
-		this.emit('quiz', this.toJSON());
-		this.emitAdmin('quiz', this.toJSON(true));
-		this.emit('quiz.points', this.getPoints());
-	}
+	// Adjust points for team size
+	const houseUsers = getHouses();
+	const houseUserArray = Object.entries(houseUsers)
+		.map(([name, amount]) => {
+			return {
+				name,
+				amount
+			};
+		})
+		.sort((a, b) => (a.amount > b.amount ? -1 : 1));
+	const [{ amount: maxAmount }] = houseUserArray;
 
-	startWithTimer(time = 10000) {
-		this.startsAt = Date.now() + time;
-		this.emit('quiz.startsAt', this.startsAt);
-		setTimeout(() => {
-			this.start();
-		}, time);
-	}
+	Object.keys(h).forEach((houseName) => {
+		const factor = maxAmount / houseUsers[houseName];
+		h[houseName] *= factor;
+	});
 
-	findUserByID(userId: string) {
-		return this.users.find((u) => u.id === userId);
-	}
+	return h;
+}
 
-	async emit(eventType: string, data: unknown) {
-		console.log('quiz.emit ' + eventType);
-		(await wss).emit(eventType, data);
-	}
+export function getPoints() {
+	return {
+		users: getUserPoints(),
+		house: getHousePoints()
+	};
+}
 
-	async emitAdmin(eventType: string, data: unknown) {
-		console.log('quiz.emitAdmin ' + eventType);
-		(await wss).emitAdmin(eventType, data);
-	}
+export function findUserByID(userId: string) {
+	return state.users.find((u) => u.id === userId);
+}
 
-	addAnswer(userId: string, answerId: string) {
-		console.log('quiz.addAnswer', { userId, answerId });
-		return this?.activeQuestion.addAnswer(userId, answerId);
-	}
+export function start() {
+	state.state = 'running';
+	setActiveQuestion(state.questions[0]);
+	question.start(state.activeQuestion);
+	emit('quiz', serialize());
+	emitAdmin('quiz', serialize(true));
+	emit('quiz.points', getPoints());
+}
 
-	addVote(userId: string, answerId: string) {
-		console.log('quiz.addVote', { userId, answerId });
-		return this?.activeQuestion.voteForAnswer(answerId, userId);
-	}
+export function startWithTimer(time = 10000) {
+	state.startsAt = Date.now() + time;
+	emit('quiz.startsAt', state.startsAt);
+	setTimeout(start, time);
+}
 
-	registerUser(username: string, house: string): string {
-		console.log('quiz.registerUser', { username, house });
-		if (this.state !== 'registration') return;
+export function addAnswer(userId: string, answerId: string) {
+	console.log('quiz.addAnswer', { userId, answerId });
+	return question.addAnswer(state?.activeQuestion, userId, answerId);
+}
 
-		const user = {
-			name: username,
-			house,
-			id: nanoid()
-		};
-		this.users.push(user);
-		this.emit('quiz.users', this.users);
-		return user.id;
-	}
+export function addVote(userId: string, answerId: string) {
+	console.log('quiz.addVote', { userId, answerId });
+	return question.voteForAnswer(state?.activeQuestion, answerId, userId);
+}
 
-	load(dataSetId: string = this.type) {
-		console.log('quiz.load', dataSetId);
+export function registerUser(username: string, house: string): string {
+	console.log('quiz.registerUser', { username, house });
+	if (state.state !== 'registration') return;
 
-		if (!(dataSetId in data)) return;
+	const user = {
+		name: username,
+		house,
+		id: nanoid()
+	};
+	state.users.push(user);
+	emit('quiz.users', state.users);
+	return user.id;
+}
 
-		this.type = dataSetId;
-		const dataSet = data[dataSetId] as DataSet;
+export function load(dataSetId: DataSetID = state.type) {
+	console.log('quiz.load', dataSetId);
 
-		this.questions = dataSet.questions.map((v, i) => new Question(this, v, i));
-		this.state = 'registration';
-		this.startsAt = 0;
-		this.questions.forEach((q, i) => {
-			if (i < this.questions.length) {
-				q.nextQuestion = this.questions[i + 1];
-			}
-		});
-		this.description = dataSet.description;
-		this.emit('quiz', this.toJSON());
-		this.emitAdmin('quiz', this.toJSON(true));
-	}
+	if (!(dataSetId in DataSet)) return;
 
-	reset() {
-		this.users = [];
-		this.id = nanoid();
-		this.load();
-	}
+	const dataSet = DataSet[dataSetId] as DataSet;
+	state.type = dataSetId;
+	state.state = 'registration';
+	state.questions = dataSet.questions.map((v, i) => question.create(v, i));
+	state.startsAt = 0;
+	state.questions.forEach((q, i) => {
+		if (i < state.questions.length) {
+			q.nextQuestion = state.questions[i + 1];
+		}
+	});
+	state.description = dataSet.description;
+	emit('quiz', serialize());
+	emitAdmin('quiz', serialize(true));
+}
 
-	getQuestion() {
-		return this.activeQuestion.toJSON();
-	}
+export function reset() {
+	state.users = [];
+	state.id = nanoid();
+	load();
+}
 
-	endQuestion() {
-		if (this.activeQuestion.state === 'closed') {
-			if (this.activeQuestion.nextQuestion) {
-				this.activeQuestion.nextQuestion.start();
-			} else {
-				this.state = 'results';
-				this.emit('quiz.state', this.state);
-			}
+export function getQuestion() {
+	return question.serialize(state?.activeQuestion);
+}
+
+function setActiveQuestion(q: InternalQuestionState) {
+	state.activeQuestion = q;
+	question.start(state.activeQuestion);
+}
+
+export function endQuestion() {
+	if (state.activeQuestion.state === 'closed') {
+		if (state.activeQuestion.nextQuestion) {
+			setActiveQuestion(state.activeQuestion.nextQuestion);
 		} else {
-			this?.activeQuestion.end();
+			state.state = 'results';
+			BoardState.addHousePoints(getHousePoints());
+			emit('quiz.state', state.state);
 		}
+	} else {
+		question.end(state?.activeQuestion);
 	}
+}
 
-	getUserPoints() {
-		const users = {};
+export function getUserPoints() {
+	const users = {};
 
-		for (let i = 0; i <= this?.activeQuestion?.index; i++) {
-			this.questions[i].getUserPoints().map(({ userId, pts }) => {
-				users[userId] = userId in users ? users[userId] + pts : pts;
-			});
-		}
-
-		return users;
-	}
-
-	getHouses() {
-		return this.users.reduce(
-			(acc, v) => {
-				acc[v.house]++;
-				return acc;
-			},
-			{ ...houses }
-		);
-	}
-	getHousePoints() {
-		const h = { ...houses };
-
-		for (let i = 0; i <= this?.activeQuestion?.index; i++) {
-			const q = this.questions[i].getHousePoints();
-			h.gryffindor += q.gryffindor;
-			h.ravenclaw += q.ravenclaw;
-			h.slytherin += q.slytherin;
-			h.hufflepuff += q.hufflepuff;
-		}
-
-		// Adjust points for team size
-		const houseUsers = this.getHouses();
-		const houseUserArray = Object.entries(houseUsers)
-			.map(([name, amount]) => {
-				return {
-					name,
-					amount
-				};
-			})
-			.sort((a, b) => (a.amount > b.amount ? -1 : 1));
-		const [{ amount: maxAmount }] = houseUserArray;
-
-		Object.keys(h).forEach((houseName) => {
-			const factor = maxAmount / houseUsers[houseName];
-			h[houseName] *= factor;
+	for (let i = 0; i <= state?.activeQuestion?.index; i++) {
+		question.getUserPoints(state.questions[i]).map(({ userId, pts }) => {
+			users[userId] = userId in users ? users[userId] + pts : pts;
 		});
-
-		return h;
 	}
 
-	getPoints() {
-		return {
-			users: this.getUserPoints(),
-			house: this.getHousePoints()
-		};
-	}
-
-	toJSON(isAdmin = false) {
-		const obj = {
-			startsAt: this.startsAt,
-			id: this.id,
-			amount: this.questions.length,
-			state: this.state,
-			name: this.name,
-			type: this.type,
-			types: Object.keys(data),
-			users: this.users,
-			description: this.description,
-			activeQuestion: this?.activeQuestion?.toJSON()
-		};
-
-		if (isAdmin) {
-			obj['types'] = Object.keys(data);
-			obj['questions'] = this.questions.map((v) => v.toJSON());
-		}
-
-		return obj;
-	}
+	return users;
 }

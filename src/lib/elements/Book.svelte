@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { lerp } from '$lib/animator/helpers';
 	import loader from '$lib/loader';
-	import pointerStore from '$lib/pointerStore';
-	import { userData } from '$lib/stores';
+	import { userData, orientation } from '$lib/stores';
 	import { onMount } from 'svelte';
 	import type { Bone } from 'three';
 	import { PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
@@ -54,7 +53,6 @@
 		setTimeout(() => {
 			state = 'rotating';
 		}, 500);
-		window.skeleton = skeleton;
 	}
 
 	function easeInOutQuint(x: number): number {
@@ -76,8 +74,8 @@
 		function animate(f: number) {
 			requestAnimationFrame(animate);
 
-			x = lerp(pointerStore.x / -5, x, 0.1);
-			y = lerp(pointerStore.y / -5, y, 0.1) + 0.03;
+			x = lerp(orientation.x / -5, x, 0.1);
+			y = lerp(orientation.y / -5, y, 0.1) + 0.03;
 
 			camera.position.x = x;
 			camera.position.z = y;

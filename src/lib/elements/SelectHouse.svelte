@@ -7,6 +7,9 @@
 
 	function playSound(h) {
 		const audio = new Audio('audio/' + h + '.mp3');
+		audio.onerror = () => {
+			callback?.(h);
+		};
 		audio.play();
 
 		audio.addEventListener('ended', () => {
@@ -21,7 +24,7 @@
 	{#each houses as h, i}
 		<img
 			in:scale={{ delay: i * 200, duration: 1200 }}
-			src="icons/{h}.svg"
+			src="/icons/{h}.svg"
 			alt="crest of house {h}"
 			on:click={() => playSound(h)}
 		/>
@@ -30,7 +33,9 @@
 
 <style>
 	.wrapper {
-  width: 100%;
+		width: 100%;
+		flex-direction: row;
+		flex-wrap: wrap;
 		margin-top: 20px;
 		display: flex;
 		justify-content: center;

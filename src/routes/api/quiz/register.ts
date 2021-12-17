@@ -13,8 +13,6 @@ export async function post({ body, locals }) {
 
 	const { username = body.name, house } = body;
 
-	console.log('Registration', { username, house });
-
 	if (!username || !house) {
 		return {
 			status: 400
@@ -34,10 +32,8 @@ export async function post({ body, locals }) {
 
 	const userId = Quiz.registerUser(username, house);
 
-	console.log('RegisterId', userId);
-
 	// Create token
-	const token = jwt.sign({ id: userId, name: username, qid: Quiz.id }, JWT_SECRET, {
+	const token = jwt.sign({ id: userId, name: username, qid: Quiz.state.id }, JWT_SECRET, {
 		expiresIn: '4h'
 	});
 

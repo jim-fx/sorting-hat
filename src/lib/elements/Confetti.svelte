@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { store } from '$lib/pointerStore';
+	import { orientation } from '$lib/stores';
 
 	import { onMount } from 'svelte';
 
 	export let width = 200;
 	export let height = 400;
 	export let amount = 200;
+	export let repeat = false;
 
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D;
@@ -63,8 +64,8 @@
 		}
 		ctx.clearRect(0, 0, width, height);
 
-		const mx = $store.x;
-		const my = $store.y;
+		const mx = $orientation.x;
+		const my = $orientation.y;
 
 		let updates = 0;
 
@@ -96,7 +97,15 @@
 			r += vr;
 
 			if (y > height) {
-				x = 0;
+				if (repeat) {
+					x = width / 2;
+					y = height - 10;
+					vy = 5 + Math.random() * 7;
+					const a = vy / 12;
+					vx = (cubicRandom() - 0.5) * (a * a) * 5;
+				} else {
+					x = 0;
+				}
 			}
 
 			write(i * stride, [x, y, vx, vy, w, h, r, vr]);

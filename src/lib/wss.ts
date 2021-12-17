@@ -16,10 +16,12 @@ const wss: Promise<WSServer> = new Promise((res) =>
 		const wss = global.wss as WebSocketServer;
 
 		wss?.on('connection', function connection(ws) {
+			console.log('socket.new');
+
 			if ('connection' in events) {
 				events['connection'].forEach((cb) => cb(ws));
 			}
-			console.log('socket: new connection');
+
 			ws.on('message', async function message(msg: Buffer) {
 				try {
 					const { type, data } = JSON.parse(msg.toString('utf-8'));
@@ -30,8 +32,9 @@ const wss: Promise<WSServer> = new Promise((res) =>
 
 					switch (type) {
 						case 'admin':
-							const { role } = await jwt.verify(data, JWT_SECRET);
+							const { role, name } = await jwt.verify(data, JWT_SECRET);
 							if (role === 'ADMIN') {
+								console.log('socket.registerAdmin', name);
 								admins.push(ws);
 							}
 							break;

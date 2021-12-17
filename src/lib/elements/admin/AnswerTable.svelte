@@ -1,22 +1,17 @@
 <script lang="ts">
-	import type { QuestionType, QuizType } from '$lib/stores';
+	import type { QuizState } from '$lib/quiz';
 
-	export let users: QuizType['users'];
-	export let answers: QuestionType['answers'];
+	export let quiz: QuizState;
+	$: question = quiz?.activeQuestion;
+	$: answers = question?.answers || [];
+	$: users = quiz?.users || [];
 
-	const userAnswers = users
-		.map((u) => {
-			const answer = answers.find((a) => a.votes.includes(u.id));
-
-			if (answer) {
-				return {
-					name: u.name,
-					uid: u.id
-				};
-			}
-			return;
-		})
-		.filter((u) => !!u);
+	$: answerAmount =
+		question?.type === 'multiple'
+			? answers?.map((a) => a.votes).flat().length || 0
+			: question.state !== 'closed'
+			? answers.length
+			: answers?.map((a) => a.votes).flat().length || 0;
 </script>
 
 <div class="w-wrapper">
@@ -38,7 +33,7 @@
 	</table>
 </div>
 
-<p>{userAnswers.length} answers ({Math.floor((userAnswers.length / users.length) * 100)}%)</p>
+<p>{answerAmount} answers ({Math.floor((answerAmount / users.length) * 100)}%)</p>
 
 <style>
 	.w-wrapper {

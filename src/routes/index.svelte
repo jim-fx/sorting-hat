@@ -9,7 +9,7 @@
 	import Overlay from '$lib/elements/Overlay.svelte';
 	import Typewriter from '$lib/elements/Typewriter.svelte';
 	import loader from '$lib/loader';
-	import pointer from '$lib/pointerStore';
+	import { orientation } from '$lib/stores';
 	import { finished, quiz } from '$lib/stores';
 	import { onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
@@ -91,8 +91,8 @@
 
 			animator?.update(time);
 
-			x = lerp(pointer.x, x, 0.1);
-			y = lerp(pointer.y, y, 0.1);
+			x = lerp(orientation.x, x, 0.1);
+			y = lerp(orientation.y, y, 0.1);
 
 			camera.position.x = x * -0.8;
 			camera.position.y = y * 0.3 + 0.1;
@@ -124,7 +124,7 @@
 	<canvas
 		bind:this={canvas}
 		class:loaded
-		out:scale
+		in:scale
 		style={`visibility:${loaded ? 'visible' : 'hidden'}`}
 		on:click={() => {
 			if (animator.params.wiggleRim < 1) {
@@ -173,8 +173,8 @@
 <style>
 	#enter-quiz {
 		position: fixed;
-	  z-index: 999;
-    top: 20px;
+		z-index: 999;
+		top: 20px;
 		left: 20px;
 		color: white;
 		background-color: black;

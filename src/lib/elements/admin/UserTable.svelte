@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { QuizType } from '$lib/stores';
+	import type { QuizState } from '$lib/quiz';
 
-	export let users: QuizType['users'];
+	export let users: QuizState['users'];
 </script>
 
 <table>

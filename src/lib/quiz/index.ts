@@ -1,8 +1,8 @@
-import * as data from './data';
-import Quiz from './Quiz';
+import * as Quiz from './Quiz';
 
-const q = new Quiz();
+export * from './Quiz';
+export type { QuizState } from './Quiz';
 
-q.load();
+Quiz.load();
 
-export default q;
+export default Quiz;
