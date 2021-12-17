@@ -62,7 +62,6 @@ import { on } from './ws';
 export { emit, on } from './ws';
 
 function registerWsAdmin() {
-	console.log('register', userStore);
 	if (browser && 'jwt' in localStorage && userStore) {
 		if (tokenStale) return;
 		const { jwt } = localStorage;

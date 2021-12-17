@@ -19,17 +19,16 @@ export interface InternalQuestionState {
 
 export type QuestionState = ReturnType<typeof serialize>;
 
-export function serialize(q: InternalQuestionState, _isAdmin = false) {
+export function serialize(q: InternalQuestionState, isAdmin = false) {
 	if (!q) return;
-	const isAdmin = _isAdmin === true;
 	return {
 		id: q.id,
 		index: q.index,
 		type: q.type,
 		state: q.state,
-		answers: q?.answers?.map((a) => answer.serialize(a, isAdmin || q.state === 'closed')) || [],
+		answers: q?.answers?.map((a) => answer.serialize(a, isAdmin || q.state !== 'open')) || [],
 		description: q.description,
-		correctAnswer: (q.state === 'closed' || isAdmin) && q.correctAnswer
+		correctAnswer: q.state === 'closed' || isAdmin ? q.correctAnswer : ''
 	};
 }
 
@@ -67,11 +66,13 @@ export function findAnswerById(q: InternalQuestionState, id: string) {
 }
 
 export function voteForAnswer(q: InternalQuestionState, answerId: string, userId: string) {
+	console.log('question.addVote', { userId, answerId });
+
 	q.answers = q.answers.map((a) => {
-		if (a.votes.has(userId)) {
-			if (a.id !== answerId) a.votes.delete(userId);
+		if (a.votes.has(userId) && a.id !== answerId) {
+			a.votes.delete(userId);
 		} else if (a.id === answerId) {
-			answer.addVote(a, userId);
+			a.votes.add(userId);
 		}
 		return a;
 	});
@@ -90,7 +91,7 @@ export function addAnswer(q: InternalQuestionState, userId: string, value: strin
 		});
 
 		a = findAnswerById(q, value);
-		answer.addVote(a, userId);
+		a.votes.add(userId);
 	} else {
 		a = q.answers.filter((a) => a.userId === userId)[0];
 		if (a) {

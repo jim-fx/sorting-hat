@@ -152,7 +152,6 @@ export function addAnswer(userId: string, answerId: string) {
 }
 
 export function addVote(userId: string, answerId: string) {
-	console.log('quiz.addVote', { userId, answerId });
 	return question.voteForAnswer(state?.activeQuestion, answerId, userId);
 }
 

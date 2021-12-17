@@ -38,6 +38,7 @@ on('question.active', (aq: QuestionType) => {
 });
 
 on('question', (v: QuestionType) => {
+	console.log('got question', v);
 	quiz.update((q) => {
 		q.activeQuestion = v;
 		return q;

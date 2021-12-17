@@ -34,6 +34,7 @@
 
 	{#each houses as h}
 		<button on:click={() => addPoints(h, 5)}>+5 {h}</button>
+		<button on:click={() => addPoints(h, -5)}>-5 {h}</button>
 	{/each}
 {/if}
 

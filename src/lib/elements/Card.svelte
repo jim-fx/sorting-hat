@@ -19,8 +19,8 @@
 				flip = false;
 				setTimeout(() => {
 					hideAnimations = false;
-				}, 2000);
-			}, 100);
+				}, 1000);
+			}, 50);
 		}, 2000);
 	};
 

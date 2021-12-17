@@ -40,7 +40,7 @@
 				<button on:click={() => send('close-voting')}>Close Voting</button>
 			{:else if questionState === 'closed'}
 				{#if question?.index === quiz.amount - 1}
-					<button on:click={() => send('end-question')}>End Quiz</button>
+					<button on:click={() => send('end-question')}>Show Results</button>
 				{:else}
 					<button on:click={() => send('end-question')}>Next Question</button>
 				{/if}

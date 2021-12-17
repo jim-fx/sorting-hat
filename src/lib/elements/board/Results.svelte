@@ -83,6 +83,7 @@
 
 <style>
 	.wrapper {
+		position: absolute;
 		display: flex;
 		flex-flow: row;
 	}

@@ -4,7 +4,6 @@ export interface InternalAnswerState {
 	id: string;
 	userId: string;
 	value: string;
-
 	votes: Set<string>;
 }
 
@@ -15,10 +14,6 @@ export function serialize(a: InternalAnswerState, showVotes = false) {
 		value: a.value,
 		votes: showVotes ? [...a.votes.values()] : []
 	};
-}
-
-export function addVote(a: InternalAnswerState, userId) {
-	a.votes.add(userId);
 }
 
 export function create(value: string, userId?: string): InternalAnswerState {

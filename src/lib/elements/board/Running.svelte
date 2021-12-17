@@ -39,7 +39,7 @@
 	$: console.log(sortedUsers);
 </script>
 
-<div class="container">
+<div class="container" id="board-running">
 	<HousePoints houses={$pointStore.house} />
 
 	<div class="current-question">

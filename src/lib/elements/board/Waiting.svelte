@@ -8,25 +8,24 @@
 	$: users = quiz?.users || [];
 </script>
 
+<img src="/icons/qr.svg" alt="" />
+<h3>Registriert euch für</h3>
+<h1>{quiz.description}</h1>
 {#if quiz.startsAt}
 	<Timer endsAt={quiz.startsAt} let:secondsLeft>
 		<h1>Quiz startet in {secondsLeft}</h1>
 	</Timer>
-{:else}
-	<img src="/icons/qr.svg" alt="" />
-	<h3>Registriert euch für</h3>
-	<h1>{quiz.description}</h1>
-	<div class="users">
-		{#each users as u}
-			<div class="user" in:slide>
-				<div class="crest" in:scale={{ delay: 500 }}>
-					<Crest house={u.house} />
-				</div>
-				<p>{u.name} registered</p>
-			</div>
-		{/each}
-	</div>
 {/if}
+<div class="users">
+	{#each users as u}
+		<div class="user" in:slide>
+			<div class="crest" in:scale={{ delay: 500 }}>
+				<Crest house={u.house} />
+			</div>
+			<p>{u.name} registered</p>
+		</div>
+	{/each}
+</div>
 
 <style>
 	img {
