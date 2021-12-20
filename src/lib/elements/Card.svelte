@@ -94,7 +94,7 @@
 	}
 
 	.card {
-		background-image: url('/card-grid.png');
+		background-image: url('/card-grid.webp');
 		background-size: 100% 100%;
 
 		position: relative;
@@ -173,12 +173,12 @@
 	}
 
 	#front {
-		background-image: url('/card-front.png');
+		background-image: url('/card-front.webp');
 		transform: rotateY(0deg) translateZ(10px);
 	}
 
 	#back {
-		background-image: url('/card-back.png');
+		background-image: url('/card-back.webp');
 		transform: rotateY(180deg) translateZ(10px);
 	}
 
@@ -205,7 +205,7 @@
 		transform-origin: center;
 		transform-style: preserve-3d;
 
-		background-image: url(/card-corner.png);
+		background-image: url("/card-corner.webp");
 	}
 
 	.corner.tr {

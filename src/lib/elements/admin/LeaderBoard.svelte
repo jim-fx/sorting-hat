@@ -22,7 +22,7 @@
 		margin-right: 40px;
 		margin-left: -20px;
 		padding: 20px;
-		background: url('/card-front.png');
+		background: url('/card-front.webp');
 		background-size: 100%;
 		filter: drop-shadow(0px 0px 10px black);
 		overflow: hidden;

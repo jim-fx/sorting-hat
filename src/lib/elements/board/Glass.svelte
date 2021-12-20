@@ -91,7 +91,7 @@
 		</svg>
 	</div>
 
-	<img class="glass" src="/sorting-glass.png" alt="" />
+	<img class="glass" src="/sorting-glass.webp" alt="" />
 </div>
 
 <style>

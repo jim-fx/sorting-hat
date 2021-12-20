@@ -6,7 +6,7 @@ module.exports = {
 	ignorePatterns: ['*.cjs'],
 	overrides: [{ files: ['*.svelte'], processor: 'svelte3/svelte3' }],
 	rules: {
-		'@typescript-eslint/explicit-module-boundary-types': 'disabled'
+		'@typescript-eslint/explicit-module-boundary-types': 0 
 	},
 	settings: {
 		'svelte3/typescript': () => require('typescript')
