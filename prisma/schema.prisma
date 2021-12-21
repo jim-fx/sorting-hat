@@ -24,10 +24,19 @@ model User {
 }
 
 model Quiz {
-  id        Int   @id @default(autoincrement())
-  created_at DateTime @default(now())
-  type       String
-  data       String
+  id          Int   @id @default(autoincrement())
+  created_at  DateTime @default(now())
+  type        String
+  data        String
+}
+
+model Registration {
+  id          Int @id @default(autoincrement())
+  created_at  DateTime @default(now())
+
+  name        String
+  house       String
+  confidence  Float
 }
 
 model Point {

@@ -89,6 +89,7 @@ export async function getData() {
 }
 
 export async function addPerson({ name, confidence, house }): Promise<unknown> {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	//@ts-ignore
 	return (await googleApi).spreadsheets.values.append({
 		auth, //auth object
